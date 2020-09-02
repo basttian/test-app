@@ -12,7 +12,7 @@ const menueitem = [
     { component: viewx},
   ]
 
-  let menuselected = menueitem[0];
+  let menuselected = menueitem[1];
 
 </script>
     <svelte:head>
@@ -23,9 +23,8 @@ const menueitem = [
 <div class="uk-section">
 
 	<ul uk-tab>
-		<li></li>
-		<li><a class="uk-active" href="javascript:void(0);" on:click={()=>menuselected = menueitem[0]} >Nuevo examen </a></li>
-		<li><a href="javascript:void(0);" on:click={()=>menuselected = menueitem[1]} >Mis examenes  </a></li>
+    <li><a class="uk-active" href="javascript:void(0);" on:click={()=>menuselected = menueitem[1]} >Mis examenes  </a></li>
+		<li><a href="javascript:void(0);" on:click={()=>menuselected = menueitem[0]} >Nuevo examen </a></li>
 		<li><Link href="/">Home</Link></li>
 	</ul>
 

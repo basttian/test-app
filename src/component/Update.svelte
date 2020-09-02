@@ -12,24 +12,25 @@ let id = null;
   }
 
 /* Variables  */
-let descripcion,finaliza,inicia,titulo,status,preguntas;
+let descripcion,finaliza,inicia,titulo,preguntas;
+let status = false;
 
-let newpreguntas = [];
-
-    function add() {
-		newpreguntas = newpreguntas.concat({ done: false, text: '' });
-	}
-
-	function clear() {
-		newpreguntas = newpreguntas.filter(t => !t.done);
-	}
-
-    $: remaining = newpreguntas.filter(t => !t.done).length;
+    $: remaining = 0;
+    let text;
 
     /* Borrar elementos del arreglo preguntas */
-    const DeleteArrayPreguntas = (value)=>{
-        db.collection(`examenes`).doc(`${id}`).update({
+    const DeleteArrayPreguntas = async(value)=>{
+        await db.collection(`examenes`).doc(`${id}`).update({
             "preguntas": firebase.firestore.FieldValue.arrayRemove(`${value}`)
+        })
+    }
+
+    /* Agregar elementos al arreglo preguntas */
+    const AgregarArrayPregunta = async(value)=>{
+        await db.collection(`examenes`).doc(`${id}`).update({
+            "preguntas": firebase.firestore.FieldValue.arrayUnion(`${value}`)
+        }).then(()=>{
+            text="";
         })
     }
 
@@ -48,12 +49,11 @@ let newpreguntas = [];
     </div>
 </nav>
 
-<div class="uk-container">
-
+<div class="uk-container uk-margin-top">
 
 <FirebaseApp firebase={firebase}>
 <Doc path={`examenes/${id}`} let:data let:ref log >
-<div slot="loading"><div uk-spinner="ratio: 3"></div></div>
+<div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic">&nbsp;cargando...</span></div>
 
 <fieldset class="uk-fieldset">
         <legend class="uk-legend">Modificar Examen</legend>
@@ -77,29 +77,45 @@ let newpreguntas = [];
         </div>
         </div>
 
+        <legend class="uk-legend uk-margin-top uk-margin-bottom">Preguntas del examen ({remaining + Number(data.preguntas.length)}) </legend>
+
         <!-- preguntas -->
          <div class="uk-width-1-1 uk-margin-top">
-          {#each { length:data.preguntas.length } as p,i}
-           <p>{data.preguntas[i]}<button on:click={()=> DeleteArrayPreguntas(data.preguntas[i]) } > X</button></p>
-          {/each}
+            <div class="uk-placeholder">
+              {#each { length:data.preguntas.length } as p,i}
+               <span class="uk-label uk-label-danger">
+               <a href="javascript:void(0)" uk-icon="icon: close" on:click={()=> DeleteArrayPreguntas(data.preguntas[i]) } ></a>
+               </span>
+               <span class="uk-text-middle uk-margin-right">{data.preguntas[i]}</span>
+              {/each}
+            </div>          
         </div>
-
-        <legend class="uk-legend uk-margin-top uk-margin-bottom">Preguntas del examen ({remaining}) </legend>
-    {#each newpreguntas as pregunta}
+    
         <div class="uk-grid-small" uk-grid>
-            <div class="uk-width-1-1">
-                <label><input class="uk-checkbox" type=checkbox bind:checked={pregunta.done} > Seleccionar para eliminar la pregunta.</label>
-            </div>
             <div class="uk-width-1-1 uk-margin-top">
-                <input class="uk-input" bind:value={pregunta.text} disabled={pregunta.done} placeholder="Qué vas a preguntar?">
+                <input class="uk-input" bind:value={text} 
+                on:change={({ target: { value } }) => AgregarArrayPregunta(value) }
+                placeholder="Nueva pregunta.">
             </div>
         </div>
-    {/each}
-    <button class="uk-button uk-button-default uk-margin-top" on:click={add}>Agregar nueva pregunta</button>
-    <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>Quitar seleccionados</button>
-
-        <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" disabled={!remaining>=1}>Actualizar examen</button>
+  
+        <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
+        disabled={!Number(data.preguntas.length)>=1}
+        on:click={()=> {
+        ref.update({ 
+            status:status.checked, 
+            titulo:titulo.value, 
+            descripcion:descripcion.value, 
+            inicia:moment(inicia.value).valueOf(), 
+            finaliza:moment(finaliza.value).valueOf() 
+        }).then(()=>{
+            UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen actualizado con éxito.", pos: 'top-center', status: 'primary'})
+        })}}
+        >Actualizar examen</button>
 </fieldset>
+    <div slot="fallback">
+        Unable to display data...
+    </div>
 </Doc>
 </FirebaseApp>
 </div>

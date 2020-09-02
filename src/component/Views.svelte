@@ -12,8 +12,6 @@ import sha512 from 'crypto-js/sha512';
 
     <!-- Body -->
 <div class="uk-container">
-<h3>Mis Examenes </h3>
-
 
 <FirebaseApp firebase={firebase}>
     <!-- default slot -->
@@ -24,7 +22,7 @@ import sha512 from 'crypto-js/sha512';
     let:data
     let:ref
 	>
-    <div slot="loading">Loading...</div>
+    <div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic">&nbsp;cargando...</span></div>
 
 <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
     {#each data as item}
@@ -32,6 +30,7 @@ import sha512 from 'crypto-js/sha512';
     <div>
         <Link class="uk-link-reset" href="/{sha512('update')}/{item.id}">
         <div class="uk-card uk-card-primary uk-card-hover uk-card-body">
+             <a class="uk-position-absolute uk-transform-center" style="left: 95%; top: 20%" href="#" uk-close on:click={()=>alert("Click")}></a>
             <h3 class="uk-card-title">{item.titulo}</h3>
             <p>{item.descripcion}</p>
         </div>
