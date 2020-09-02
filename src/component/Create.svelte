@@ -2,17 +2,18 @@
 import { FirebaseApp, User, Doc, Collection } from "sveltefire";
 import firebase from "firebase/app";
 
-import { Router, Route, Link } from 'yrv';
+import { Router, Route, Link, router } from 'yrv';
+
 import createx from "./Create.svelte";
 import newx from "./New.svelte";
 import viewx from "./Views.svelte";
 
 const menueitem = [
-    { component: newx},
     { component: viewx},
+    { component: newx},
   ]
 
-  let menuselected = menueitem[1];
+  let menuselected = menueitem[0];
 
 </script>
     <svelte:head>
@@ -23,8 +24,8 @@ const menueitem = [
 <div class="uk-section">
 
 	<ul uk-tab>
-    <li><a class="uk-active" href="javascript:void(0);" on:click={()=>menuselected = menueitem[1]} >Mis examenes  </a></li>
-		<li><a href="javascript:void(0);" on:click={()=>menuselected = menueitem[0]} >Nuevo examen </a></li>
+    <li><a class="uk-active" href="javascript:void(0);" on:click={()=>menuselected = menueitem[0]} >Mis examenes  </a></li>
+		<li><a href="javascript:void(0);" on:click={()=>menuselected = menueitem[1]} >Nuevo examen </a></li>
 		<li><Link href="/">Home</Link></li>
 	</ul>
 
