@@ -32,6 +32,37 @@ const delExamen = async(id) =>{
 }
 
 
+const copyTextToClipboard = (v) => {
+  
+    try{
+        var unique = document.querySelectorAll('.unique');
+        var msg = `${v}` ;
+
+        unique.forEach(function (unique) {
+            msg+=unique.value;
+        });
+
+        var temp =document.createElement("textarea");
+        var tempMsg = document.createTextNode(msg);
+        temp.appendChild(tempMsg);
+
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+        UIkit.notification({
+            message: "<span uk-icon='icon: check'></span> Copiado!",
+            status: 'primary',
+            pos: 'top-right',
+            timeout: 1000
+        });
+        }
+    catch(err) {
+        console.log("error");
+    }
+    
+}
+
 
 </script>
     <svelte:head>
@@ -62,14 +93,24 @@ const delExamen = async(id) =>{
                 <li>
                     <a class="uk-accordion-title" href="#"><span uk-icon="icon: grid"></span></a>
                     <div class="uk-accordion-content">
-                    <Link class="uk-link-reset uk-icon-link uk-margin-small-right" href="/{sha512('update')}/{item.id}"><span uk-icon="file-edit"></span></Link>
-                    <a href="javascript:void(0)" class="uk-icon-link" uk-icon="trash" on:click={()=> delExamen(item.id) } > </a>
+                    <Link class="uk-link-reset uk-icon-link uk-margin-small-right" href="/{sha512('update')}/{item.id}" uk-tooltip="Editar" ><span uk-icon="file-edit"></span></Link>
+                    <a href="" class="uk-icon-link" uk-icon="icon: folder" uk-tooltip="Ver"></a>
+                    <a href="javascript:void(0)" class="uk-icon-link" uk-tooltip="Eliminar" uk-icon="trash" on:click={()=> delExamen(item.id) } > </a>
                     </div>
                 </li>
             </ul>
             <h3 class="uk-card-title">{item.titulo}</h3>
             <p>{item.descripcion}</p>
-            <input class="uk-input uk-form-blank uk-form-width-large" type="text" value={item.id} disabled={true}>
+            <div class="uk-margin uk-align-center">
+                <div class="uk-inline">
+                    <a class="uk-form-icon uk-form-icon-flip" href="javascript:void(0)" uk-icon="icon: copy"
+                    on:click={()=> copyTextToClipboard(item.id) } uk-tooltip="Copiar código"
+                    ></a>
+                    <input class="uk-input uk-form-blank uk-form-width-large" type="text" 
+                    value={item.id}
+                    disabled={true} >
+                </div>
+            </div>
         </div>
         
     </div>
