@@ -22,6 +22,7 @@
 	import home from "./Home.svelte";
 	import create from "./component/Create.svelte";
 	import update from "./component/Update.svelte";
+	import test from "./student/Examen.svelte";
 	import sha512 from 'crypto-js/sha512';
 
 </script>
@@ -31,5 +32,6 @@
       <Route path="/" exact component={home}/>
 	  <Route exact path="/{sha512('create')}" component={create}/><!-- wtf - Porque? Para Que?  -->
 	  <Route path="/{sha512('update')}/:id" exact component={update} />
+	  <Route path="/{sha512('test')}/:id" exact component={test} />
   </Router> 
 

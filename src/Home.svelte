@@ -1,5 +1,9 @@
 <script>
-
+	import { FirebaseApp, User, Doc, Collection } from "sveltefire";
+	import firebase from "firebase/app";
+	import "firebase/firestore";
+	import "firebase/auth";
+	const db = firebase.firestore();
 	//I love moment
 	import moment from 'moment';
 	let _date = moment().format('dddd Do [de] MMMM [del] YYYY');
@@ -25,6 +29,12 @@
 	import { Link } from 'yrv';
 	import sha512 from 'crypto-js/sha512';
 
+	let codigo = '';
+
+	const SearchTest = (c) => {
+		console.log(c)
+	}
+
 </script>
 
 <svelte:head>
@@ -44,10 +54,10 @@
 
 	<p>Hola alumno, coloca el codigo de examen que te dio tu profesor.</p>
 	 <div class="uk-margin">
-        <input class="uk-input" type="text" placeholder="Codigo del examen">
+        <input class="uk-input" type="text" bind:value={codigo} placeholder="Codigo del examen">
      </div>
 	 <div class="uk-margin">
-		<button class="uk-button uk-button-default" >Tomar mi examen</button>
+		<Link href="/{sha512('test')}/{codigo}"><button class="uk-button uk-button-default" disabled={!codigo}> Tomar mi examen</button></Link>
 	</div>
 	
 </div>
