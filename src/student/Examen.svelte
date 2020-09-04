@@ -15,26 +15,22 @@
     import Timer32 from "carbon-icons-svelte/lib/Timer32";
     import { onMount } from 'svelte';
     let _inicio, _fin,_duracion;
+    let preguntas = [];
    onMount(async () => {
       await db.doc(`examenes/${id}`).get().then(function(doc) {
             if (doc.exists) {
                 _inicio = doc.data().inicia;
                 _fin = doc.data().finaliza;
                 //_duracion = moment.utc(moment(_fin).diff(moment(_inicio))).format('HH:mm');
-                _duracion = moment.duration(_fin - _inicio).asMinutes();;
+                _duracion = moment.duration(_fin - _inicio).asMinutes();
+                preguntas = doc.data().preguntas;
             } else {
                 console.log("No such document!");
             }
         }).catch(function(error) {
             console.log("Error getting document:", error);
         });
-
    })
-
-    let count = 0;
-	$: if (count >= _duracion) {
-		
-	}
 
     /* I Lov */
 	import { quill } from 'svelte-quill'
@@ -44,6 +40,50 @@
     /* Data */
     let estudiante = '';
     let dni = '';
+    let disablebtn = false;
+ /* buscamos duplicados por dni */
+const sendDataResponse = async(dni,estudiante,respuesta) => {
+    disablebtn = true;
+    let rRef = await db.collection(`respuestas`).where('dni','==', dni ).where('idexamen','==',id);
+    promise = rRef.get().then(async collections => {
+      collections.forEach(collection => {
+          console.log('Found with id:', collection.id);
+          UIkit.notification({message:"<span uk-icon='icon: warning'></span> Error! Su examen ya se encuentra registrado. ",status: "danger"});
+          return;
+      });
+
+      if(collections.empty){
+
+        await db.collection(`respuestas`).add({
+
+            fecha:moment().valueOf(),
+            idexamen:`${id}`,
+            dni:dni,
+            nombre:`${estudiante}`,
+            respuestas:`${respuesta}`,
+            corregido: false,
+            nota: 0,
+            preguntas: preguntas
+
+        }).then(resp=>{
+            //console.log(resp);
+            UIkit.notification({
+                message:"<span uk-icon='icon: check'></span> Examen enviado éxitosamente.",
+                pos: "top-right",
+                status: "primary"
+                });
+        }).catch(error=>{
+            console.log(error);
+        })
+
+      }
+
+    })
+}
+
+
+let promise;
+
 </script>
     <svelte:head>
         <title>Examen</title>
@@ -93,11 +133,19 @@
 
 </article>
 <!-- Panel de respuestas -->
-<div class="editor" use:quill={options} on:text-change={e => content = e.detail}/>
+<div class="editor" use:quill={options} on:text-change={e => content = e.detail} />
 <!-- {@html content.html} -->
-<button class="uk-button uk-button-primary uk-margin" disabled={Number(content.text.length)<=3}
-on:click={() => console.log(content.text)}
+<button class="uk-button uk-button-primary uk-margin" 
+disabled={Number(content.text.length)<=3 || disablebtn || !dni || !estudiante}
+on:click={() => sendDataResponse(Number(dni),estudiante,content.html)}
 >Enviar respuesta</button>
+<!-- remember the promise u made -->
+    {#await promise}
+        <div class="uk-position-cover uk-overlay 
+                    uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
+            <div uk-spinner="ratio: 3"></div>
+        </div> 
+    {/await}
 <!-- Si no se encuentra -->
 <div slot="fallback">
     <div class="uk-alert-danger" uk-alert>

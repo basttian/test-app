@@ -9,7 +9,7 @@ import { Router, Route, Link } from 'yrv';
 let preguntas = [];
 let cod = '[Esperando codigo de examen..]';
 
-  const AddData = async () => {
+  const AddData = async (idusuario) => {
         let arr = [];
             preguntas.forEach(element => {
                 arr.push(element.text);
@@ -23,6 +23,7 @@ let cod = '[Esperando codigo de examen..]';
           status:status,
           tiempo: _t,
           titulo:titulo,
+          uid: idusuario
         }).then(function(i) {
             cod = i.id;
             UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen creado con éxito.", 
@@ -69,6 +70,8 @@ $: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
     <!-- Body -->
 <div class="uk-container">
 <FirebaseApp firebase={firebase}>
+    <User let:user={user} let:auth={auth} >
+
         <div class="uk-clearfix">
             <div class="uk-float-right">
                 <div class="uk-card uk-card-default uk-card-body">El examen tendra una duración de {d(inicia,finaliza)<0?0:d(_i,_f)} minutos.</div>
@@ -131,11 +134,12 @@ $: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
 
         <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
         disabled={!remaining>=1 || !d(inicia,finaliza)>=1 || titulo.length<8 || descripcion.length<8 }
-        on:click={()=> AddData() }
+        on:click={()=> AddData(user.uid) }
         >Crear nuevo examen
         </button>
     </fieldset>
     <!-- info -->
     <p><span uk-icon="info"></span> El código del examen lo obtendra una vez generado el mismo.</p>
+     </User>
 </FirebaseApp>
 </div>

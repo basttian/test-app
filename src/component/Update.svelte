@@ -83,6 +83,7 @@ let status = false;
 <div class="uk-container uk-margin-top">
 
 <FirebaseApp firebase={firebase}>
+    <User let:user={user} let:auth={auth} >
 <Doc path={`examenes/${id}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic">&nbsp;cargando...</span></div>
 
@@ -139,7 +140,6 @@ let status = false;
               {/each}
             </div>          
         </div>
-    
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1 uk-margin-top">
                 <input class="uk-input" bind:value={text} 
@@ -158,7 +158,8 @@ let status = false;
             inicia:moment(inicia.value).valueOf(), 
             finaliza:moment(finaliza.value).valueOf(),
             tiempo: _tiempo,
-            duracion: _fin - _inicio
+            duracion: _fin - _inicio,
+            uid: user.uid
         }).then(()=>{
             UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen actualizado con éxito.", 
             pos: 'top-center', 
@@ -171,6 +172,8 @@ let status = false;
     <div slot="fallback">
         Unable to display data...
     </div>
+
 </Doc>
+</User>
 </FirebaseApp>
 </div>
