@@ -6,6 +6,7 @@ import moment from 'moment';
 import 'moment/locale/es';
 import { Router, Route, Link } from 'yrv';
 
+
 let preguntas = [];
 let cod = '[Esperando codigo de examen..]';
 
@@ -72,7 +73,7 @@ $: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
 <FirebaseApp firebase={firebase}>
     <User let:user={user} let:auth={auth} >
 
-        <div class="uk-clearfix">
+        <div class="uk-clearfix uk-margin-top">
             <div class="uk-float-right">
                 <div class="uk-card uk-card-default uk-card-body">El examen tendra una duración de {d(inicia,finaliza)<0?0:d(_i,_f)} minutos.</div>
             </div>

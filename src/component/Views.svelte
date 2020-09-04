@@ -53,7 +53,7 @@ const copyTextToClipboard = (v) => {
         UIkit.notification({
             message: "<span uk-icon='icon: check'></span> Copiado!",
             status: 'primary',
-            pos: 'top-right',
+            pos: 'top-center',
             timeout: 1000
         });
         }
@@ -68,20 +68,20 @@ const copyTextToClipboard = (v) => {
     <svelte:head>
         <title>Mis Examenes</title>
     </svelte:head>
-
+ 
     <!-- Body -->
-<div class="uk-container">
+<div class="uk-container uk-margin-top">
 
 <FirebaseApp firebase={firebase}>
-    <!-- default slot -->
-
+<User let:user={user} let:auth={auth} >
 	<Collection 
     path={'examenes'} 
+    query={ (ref) => ref.where("uid","==", user.uid) } 
     log
     let:data
     let:ref
 	>
-    <div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic">&nbsp;cargando...</span></div>
+    <div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic"></span></div>
 
 <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
     {#each data as item}
@@ -123,5 +123,6 @@ const copyTextToClipboard = (v) => {
     </div>
 
 </Collection>
+</User>
 </FirebaseApp>
 </div>

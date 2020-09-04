@@ -85,7 +85,7 @@ let status = false;
 <FirebaseApp firebase={firebase}>
     <User let:user={user} let:auth={auth} >
 <Doc path={`examenes/${id}`} let:data let:ref log >
-<div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic">&nbsp;cargando...</span></div>
+<div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic"></span></div>
 
         <div class="uk-clearfix">
             <div class="uk-float-right">

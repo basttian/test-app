@@ -46,11 +46,8 @@
 <div class="uk-container">
 
 	<h1 class="uk-text-center uk-text-capitalize uk-margin-top">{_date} {hours}:{minutes<=9?"0"+minutes:minutes}:{seconds<=9?"0"+seconds:seconds}</h1>
-
-	<p>Hola si eres profesor, debes crear tu examen.</p>
-	<Link href="/{sha512('create')}"><button class="uk-button uk-button-default" > Crear nuevo examen</button></Link>
-
-
+	
+	<!-- <Link href="/{sha512('create')}"><button class="uk-button uk-button-default" > Examenes</button></Link> -->
 
 	<p>Hola alumno, coloca el codigo de examen que te dio tu profesor.</p>
 	 <div class="uk-margin">

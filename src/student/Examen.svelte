@@ -2,6 +2,8 @@
 
     import { FirebaseApp, User, Doc, Collection } from "sveltefire";
     import firebase from "firebase/app";
+    import "firebase/auth";
+    
     const db = firebase.firestore();
     import moment from 'moment';
     import 'moment/locale/es';
@@ -12,17 +14,21 @@
         id = router.params ? router.params.id : null;
     }
 
-    import Timer32 from "carbon-icons-svelte/lib/Timer32";
+    import { get } from 'svelte/store';
+    import { _userid , progress } from "../store/store.js"
+    const _usuario = get(_userid);
+
     import { onMount } from 'svelte';
-    let _inicio, _fin,_duracion;
+    //let _inicio, _fin,_duracion;
     let preguntas = [];
+ 
    onMount(async () => {
       await db.doc(`examenes/${id}`).get().then(function(doc) {
             if (doc.exists) {
-                _inicio = doc.data().inicia;
-                _fin = doc.data().finaliza;
+                //_inicio = doc.data().inicia;
+                //_fin = doc.data().finaliza;
                 //_duracion = moment.utc(moment(_fin).diff(moment(_inicio))).format('HH:mm');
-                _duracion = moment.duration(_fin - _inicio).asMinutes();
+                //_duracion = moment.duration(_fin - _inicio).asMinutes();
                 preguntas = doc.data().preguntas;
             } else {
                 console.log("No such document!");
@@ -42,9 +48,9 @@
     let dni = '';
     let disablebtn = false;
  /* buscamos duplicados por dni */
-const sendDataResponse = async(dni,estudiante,respuesta) => {
+const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
     disablebtn = true;
-    let rRef = await db.collection(`respuestas`).where('dni','==', dni ).where('idexamen','==',id);
+    let rRef = await db.collection(`respuestas`).where('uid','==', _usuario ).where('idexamen','==',id);
     promise = rRef.get().then(async collections => {
       collections.forEach(collection => {
           console.log('Found with id:', collection.id);
@@ -59,11 +65,12 @@ const sendDataResponse = async(dni,estudiante,respuesta) => {
             fecha:moment().valueOf(),
             idexamen:`${id}`,
             dni:dni,
-            nombre:`${estudiante}`,
+            nombre:estudiante.value,
             respuestas:`${respuesta}`,
             corregido: false,
             nota: 0,
-            preguntas: preguntas
+            preguntas: preguntas,
+            uid: useruid
 
         }).then(resp=>{
             //console.log(resp);
@@ -80,9 +87,8 @@ const sendDataResponse = async(dni,estudiante,respuesta) => {
 
     })
 }
-
-
 let promise;
+import TIMER from "./Timer.svelte";
 
 </script>
     <svelte:head>
@@ -91,32 +97,40 @@ let promise;
     </svelte:head>
 
     <!-- Body -->
-
-<nav class="uk-navbar-container" uk-navbar>
+<FirebaseApp firebase={firebase}>
+<User let:user={user} let:auth={auth} >
+<nav class="uk-navbar-transparent" uk-navbar>
     <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
-            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2"></span></Link></li>
+            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" 
+            uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
         </ul>
     </div>
     <div class="uk-navbar-right">
-        <span class="uk-margin-right">{_duracion === void 0 ?'':`Tiempo del examen: ${_duracion} minutos` }<Timer32/></span>
+        <Doc path={`examenes/${id}`} let:data let:ref log >
+            <span class="uk-margin-right">{`Tiempo del examen: ${moment.duration(data.finaliza - data.inicia).asMinutes()} minutos`} <span uk-icon="future"></span></span>
+        </Doc>
     </div>
 </nav>
 
 <div class="uk-container uk-margin-top">
-<FirebaseApp firebase={firebase}>
 <Doc path={`examenes/${id}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic"></span></div>
 <!-- Aviso -->
 <div class="uk-alert-primary" uk-alert>
     <a class="uk-alert-close" uk-close></a>
-    <p>Bienvenido!! Debes colocar tu nombre completo y tu DNI antes de comenzar con el examen. El tiempo esta corriendo.</p>
+    <p>Bienvenido!! Debes colocar tu DNI antes de comenzar con el examen. 
+    <span uk-icon="icon: clock"></span> Tienes {moment.duration(data.finaliza - data.inicia).asMinutes()} minutos.</p>
 </div>
 <!-- Formulario  -->
 <div class="uk-background-muted uk-margin">
     <div  class="uk-grid-small" uk-grid>
     <div class="uk-width-1-2@s">
-        <input class="uk-input" bind:value={estudiante} type="text" placeholder="Nombre y apellido">
+        <input class="uk-input uk-disabled" 
+        value={user.displayName}
+        bind:this={estudiante} 
+        type="text" 
+        placeholder="Nombre y apellido" disabled={true}>
     </div>
     <div class="uk-width-1-2@s">
         <input class="uk-input" bind:value={dni} type="text" placeholder="DNI">
@@ -137,7 +151,7 @@ let promise;
 <!-- {@html content.html} -->
 <button class="uk-button uk-button-primary uk-margin" 
 disabled={Number(content.text.length)<=3 || disablebtn || !dni || !estudiante}
-on:click={() => sendDataResponse(Number(dni),estudiante,content.html)}
+on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
 >Enviar respuesta</button>
 <!-- remember the promise u made -->
     {#await promise}
@@ -153,6 +167,9 @@ on:click={() => sendDataResponse(Number(dni),estudiante,content.html)}
         <p>El examen no existe.</p>
     </div>
 </div>
+<TIMER minut={moment.duration(data.finaliza - data.inicia).asMinutes()} />
 </Doc>
-</FirebaseApp>
+
 </div>
+</User>
+</FirebaseApp>

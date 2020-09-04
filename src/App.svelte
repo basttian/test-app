@@ -17,6 +17,7 @@
 	// Initialize Firebase
 	firebase.initializeApp(firebaseConfig);
 
+    import {_userid} from "./store/store.js";
 	firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       // User is signed in.
@@ -28,20 +29,29 @@
       var uid = user.uid;
       var providerData = user.providerData;
       var tel = user.phoneNumber;
-      console.log(uid);
+      _userid.set(user.uid);
     } else {
       console.log("No user in line");
     }
   });
 
+    import { relog } from './store/store.js';
+    const formatter = new Intl.DateTimeFormat('en', {
+		hour12: true,
+		hour: 'numeric',
+		minute: '2-digit',
+		second: '2-digit'
+	});
+
 	//almost lov
 	import { Router, Route, Link } from 'yrv';
 	import home from "./Home.svelte";
-	import create from "./component/Create.svelte";
+	import views from "./component/Views.svelte";
 	import update from "./component/Update.svelte";
-	import test from "./student/Examen.svelte";
+    import newx from "./component/New.svelte";
+    import test from "./student/Examen.svelte";
+    
 	import sha512 from 'crypto-js/sha512';
-
 	var provider = new firebase.auth.GoogleAuthProvider();
 
 	const Salir = (user) =>{
@@ -79,7 +89,13 @@
 <div class="uk-inline">
     <span uk-icon="grid"></span>
     <div uk-dropdown="pos: top-right">
-
+    <ul class="uk-nav uk-dropdown-nav">
+        <li><Link  class="uk-active uk-nav-header" href="/">pagina principal</Link></li>
+        <li><Link href="/{sha512('view')}">Mis examenes</Link></li>
+        <li><Link href="/{sha512('new')}">Nuevo examen</Link></li>
+        <li class="uk-nav-divider"></li>
+        <li><a href="#">Item</a></li>
+    </ul>
     </div>
     <button uk-tooltip="title: Salir; pos: bottom" on:click={()=>{Salir(auth)}} uk-icon="sign-out"></button>
 </div>
@@ -91,9 +107,10 @@
 
   <Router>
       <Route path="/" exact component={home}/>
-	  <Route exact path="/{sha512('create')}" component={create}/><!-- wtf - Porque? Para Que?  -->
+	  <Route exact path="/{sha512('view')}" component={views}/><!-- wtf - Porque? Para Que?  -->
 	  <Route path="/{sha512('update')}/:id" exact component={update} />
 	  <Route path="/{sha512('test')}/:id" exact component={test} />
+      <Route path="/{sha512('new')}" exact component={newx} />
   </Router> 
 
 
@@ -114,7 +131,7 @@
             </div>
             <div class="uk-width-expand">
                 <h3 class="uk-card-title uk-margin-remove-bottom"><button class="uk-button uk-button-text" uk-tooltip="title: Ingresar..; pos: bottom"  on:click={() => auth.signInWithPopup(provider)} > Google account.</button></h3>
-                
+                {formatter.format($relog)}
             </div>
         </div>
     </div>
