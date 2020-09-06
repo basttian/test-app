@@ -81,21 +81,28 @@ const copyTextToClipboard = (v) => {
     let:data
     let:ref
 	>
-    <div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic"></span></div>
+    <div slot="loading"><div uk-spinner></div></div>
 
+{#if data.length === 0}
+    <div class="uk-container uk-margin-top">
+        <div class="uk-alert-uk-alert-primary" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p><span uk-icon="icon: info"></span> Aun no tienes examenes.</p>
+        </div>
+    </div>
+{:else}
 <div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
     {#each data as item}
-
     <div>
-        
         <div class="uk-card uk-card-primary uk-card-hover uk-card-body">
             <ul uk-accordion="multiple: true">
                 <li>
                     <a class="uk-accordion-title" href="#"><span uk-icon="icon: grid"></span></a>
                     <div class="uk-accordion-content">
-                    <Link class="uk-link-reset uk-icon-link uk-margin-small-right" href="/{sha512('update')}/{item.id}" uk-tooltip="Editar" ><span uk-icon="file-edit"></span></Link>
-                    <a href="" class="uk-icon-link" uk-icon="icon: folder" uk-tooltip="Ver"></a>
-                    <a href="javascript:void(0)" class="uk-icon-link" uk-tooltip="Eliminar" uk-icon="trash" on:click={()=> delExamen(item.id) } > </a>
+                    <Link class="uk-link-reset uk-icon-link uk-margin-small-right" href="/{sha512('update')}/{item.id}" uk-tooltip="Editar." ><span uk-icon="file-edit"></span></Link>
+                    <Link href="/{sha512('respuestas')}/{item.id}" class="uk-icon-link" uk-icon="icon: folder" uk-tooltip="Corregir examenes."> </Link>
+                    <Link href="" class="uk-icon-link" uk-icon="icon: database" uk-tooltip="Ingresos al examen."> </Link>
+                    <a href="javascript:void(0)" class="uk-icon-link" uk-tooltip="Eliminar." uk-icon="trash" on:click={()=> delExamen(item.id) } > </a>
                     </div>
                 </li>
             </ul>
@@ -104,23 +111,22 @@ const copyTextToClipboard = (v) => {
             <div class="uk-margin uk-align-center">
                 <div class="uk-inline">
                     <a class="uk-form-icon uk-form-icon-flip" href="javascript:void(0)" uk-icon="icon: copy"
-                    on:click={()=> copyTextToClipboard(item.id) } uk-tooltip="Copiar código"
-                    ></a>
+                    on:click={()=> copyTextToClipboard(item.id) } uk-tooltip="Copiar código"> </a>
                     <input class="uk-input uk-form-blank uk-form-width-large" type="text" 
                     value={item.id}
                     disabled={true} >
                 </div>
             </div>
         </div>
-        
     </div>
-
     {/each}
 </div>
+{/if}
 
-    <div slot="fallback">
-        Unable to display data...
-    </div>
+<!-- Si hay un error -->
+<div slot="fallback">
+    Unable to display data...
+</div>
 
 </Collection>
 </User>

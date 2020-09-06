@@ -9,15 +9,20 @@
   setInterval(() => {
     if ($timer > 0) $timer--;
   }, 1000);
-  $: seconds = Math.floor($timer - minutes * 60);
-  $: minutes = Math.floor($timer / 60);
+  $: seconds = Math.floor($timer%60);
+  $: minutes = Math.floor(($timer / 60)%60);
+  $: hours =   Math.floor(($timer / 60)/60);
+ 
+  
+    function pad(num) {
+        return ("0"+num).slice(-2);
+    }
+
   
 </script>
 
     {#if timer < 1}
       <h1>Starting soon....</h1>
     {:else}
-      <progress  class="uk-progress" value={$timer/original}></progress>
+      <span class="uk-margin-right">Tiempo del examen: {pad(hours)}:{pad(minutes)}:{pad(seconds)} <span uk-icon="future"></span></span>
     {/if}
- 
-  

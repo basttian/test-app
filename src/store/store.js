@@ -10,6 +10,6 @@ export const relog = readable(new Date(), function start(set) {
 	};
 });
 
-//I Love
+//I L
 export const _userid =  writable();
-export const progress = writable(0);
+

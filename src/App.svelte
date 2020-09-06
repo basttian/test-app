@@ -30,6 +30,12 @@
       var providerData = user.providerData;
       var tel = user.phoneNumber;
       _userid.set(user.uid);
+        if (typeof(Storage) !== 'undefined') {
+            localStorage.setItem('user', user.email);
+            sessionStorage.setItem('user', user.email)
+        } else {
+            consolle.log("Storage no es compatible");
+        }
     } else {
       console.log("No user in line");
     }
@@ -44,13 +50,22 @@
 	});
 
 	//almost lov
-	import { Router, Route, Link } from 'yrv';
+    import { Router, Route, Link, router } from 'yrv';
+    import Cookies from 'js-cookie';
+    router.subscribe(e => {
+    //if (!e.initial) console.log(e);
+    //Cookies.remove('CO-ROUTE', { path: `${e}` });
+    Cookies.set('CO-ROUTE', `${e.path}`,{ expires: 360, path: `${e}`});
+    });
+    
 	import home from "./Home.svelte";
 	import views from "./component/Views.svelte";
 	import update from "./component/Update.svelte";
     import newx from "./component/New.svelte";
     import test from "./student/Examen.svelte";
-    
+    import respuestas from "./component/Respuestas.svelte";
+
+
 	import sha512 from 'crypto-js/sha512';
 	var provider = new firebase.auth.GoogleAuthProvider();
 
@@ -94,7 +109,7 @@
         <li><Link href="/{sha512('view')}">Mis examenes</Link></li>
         <li><Link href="/{sha512('new')}">Nuevo examen</Link></li>
         <li class="uk-nav-divider"></li>
-        <li><a href="#">Item</a></li>
+        <li><a href="javascript:void(0);" on:click={()=>{Salir(auth)}} >Cerrar Sesión</a></li>
     </ul>
     </div>
     <button uk-tooltip="title: Salir; pos: bottom" on:click={()=>{Salir(auth)}} uk-icon="sign-out"></button>
@@ -109,10 +124,12 @@
       <Route path="/" exact component={home}/>
 	  <Route exact path="/{sha512('view')}" component={views}/><!-- wtf - Porque? Para Que?  -->
 	  <Route path="/{sha512('update')}/:id" exact component={update} />
-	  <Route path="/{sha512('test')}/:id" exact component={test} />
+	  <Route path="/{sha512('test')}/:id/:user" exact component={test} />
       <Route path="/{sha512('new')}" exact component={newx} />
+      <Route path="/{sha512('respuestas')}/:id" exact component={respuestas} />
   </Router> 
 
+  
 
 
 

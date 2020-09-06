@@ -13,9 +13,8 @@
     $: {
         id = router.params ? router.params.id : null;
     }
-
     import { get } from 'svelte/store';
-    import { _userid , progress } from "../store/store.js"
+    import { _userid } from "../store/store.js"
     const _usuario = get(_userid);
 
     import { onMount } from 'svelte';
@@ -30,6 +29,8 @@
                 //_duracion = moment.utc(moment(_fin).diff(moment(_inicio))).format('HH:mm');
                 //_duracion = moment.duration(_fin - _inicio).asMinutes();
                 preguntas = doc.data().preguntas;
+                
+
             } else {
                 console.log("No such document!");
             }
@@ -47,7 +48,7 @@
     let estudiante = '';
     let dni = '';
     let disablebtn = false;
- /* buscamos duplicados por dni */
+ /* buscamos duplicados  */
 const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
     disablebtn = true;
     let rRef = await db.collection(`respuestas`).where('uid','==', _usuario ).where('idexamen','==',id);
@@ -70,7 +71,8 @@ const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
             corregido: false,
             nota: 0,
             preguntas: preguntas,
-            uid: useruid
+            uid: _usuario,
+            expired: false,
 
         }).then(resp=>{
             //console.log(resp);
@@ -87,8 +89,53 @@ const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
 
     })
 }
+
 let promise;
+
 import TIMER from "./Timer.svelte";
+import CRONOMETRO from "./Cronos.svelte";
+import { onInterval } from '../store/utils.js';
+let testTime ;
+onInterval(() => testTime -= 1, 1000);
+$: if (testTime === 0){
+        SaveTimeOut();
+    }
+async function  SaveTimeOut(){
+   let rRef = await db.collection(`respuestas`).where('uid','==', _usuario ).where('idexamen','==',id);
+    promise = rRef.get().then(async collections => {
+      collections.forEach(collection => {
+          console.log('Found with id:', collection.id);
+          UIkit.notification({message:"<span uk-icon='icon: warning'></span> Error! Su examen ya se encuentra registrado. ",status: "danger"});
+          return;
+      });
+        if(collections.empty){
+        await db.collection(`respuestas`).add({
+                fecha:moment().valueOf(),
+                idexamen:`${id}`,
+                dni:dni,
+                nombre:estudiante.value,
+                respuestas: content.html,
+                corregido: false,
+                nota: 1,
+                preguntas: preguntas,
+                uid: _usuario,
+                expired: true,
+            }).then(()=>{
+                UIkit.notification({
+                message: '<span uk-icon="icon: warning"></span> El tiempo ha expirado!',
+                status: 'danger',
+                pos: 'top-center',
+                timeout: 5000 });
+                disablebtn=true;
+            }).catch(e=>{
+                console.log(e);
+            });
+        }
+    });
+}
+
+import Cookies from 'js-cookie';
+let uidingreso;
 
 </script>
     <svelte:head>
@@ -96,26 +143,63 @@ import TIMER from "./Timer.svelte";
         <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     </svelte:head>
 
+
     <!-- Body -->
 <FirebaseApp firebase={firebase}>
 <User let:user={user} let:auth={auth} >
-<nav class="uk-navbar-transparent" uk-navbar>
-    <div class="uk-navbar-left">
-        <ul class="uk-navbar-nav">
-            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" 
-            uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
-        </ul>
+
+<!-- {Cookies.get('CO-ROUTE')} -->
+
+<Collection path={`ingresos`} 
+query={ (ref) => ref.where("codigodeExamen","==",`${id}`).where("uid","==",`${_usuario}`) }  
+let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingreso = e.detail.data[0].id}  > 
+<div class="uk-container uk-margin-top" slot="loading"><div uk-spinner></div></div>
+<div class="uk-container uk-margin-top" slot="fallback">
+    Unable to display ...
+</div>
+
+{#if data.length === 0}
+    <div class="uk-container uk-margin-top">
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p><span uk-icon="icon: warning"></span>Error!! El examen no se encuentra disponible. Consulte a su profesor.</p>
+        </div>
     </div>
-    <div class="uk-navbar-right">
-        <Doc path={`examenes/${id}`} let:data let:ref log >
-            <span class="uk-margin-right">{`Tiempo del examen: ${moment.duration(data.finaliza - data.inicia).asMinutes()} minutos`} <span uk-icon="future"></span></span>
-        </Doc>
+{:else if data.length === 1 }
+
+<Doc path={`ingresos/${uidingreso}`} let:data let:ref >
+<div slot="loading"><div uk-spinner></div></div>
+<!-- Oculto el examen con la condicion  -->
+{#if moment(data.ingreso).add(10, 'seconds').valueOf() <= moment().valueOf()  }<!-- para revisar -->
+    <div class="uk-container uk-margin-top">
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p><span uk-icon="icon: warning"></span>Error!! El examen ya no se encuentra disponible. Consulte a su profesor.</p>
+        </div>
     </div>
-</nav>
+{:else}
+<!-- Muestro el examen  -->
+<Doc path={`examenes/${id}`} let:data let:ref log on:data={(e) =>  e.empty ? 0 : testTime = moment.duration(e.detail.data.finaliza - e.detail.data.inicia).asSeconds() } >
+<div class="uk-float-right" slot="loading"><div uk-spinner></div></div>
+    <nav class="uk-navbar-transparent" uk-navbar>
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" 
+                uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
+            </ul>
+        </div>
+        <div class="uk-navbar-right">
+            <CRONOMETRO minut={moment.duration(data.finaliza - data.inicia).asMinutes() } />
+        </div>
+    </nav>
+    <div class="uk-container">
+        <TIMER minut={moment.duration(data.finaliza - data.inicia).asMinutes()} />
+    </div>
+</Doc>
 
 <div class="uk-container uk-margin-top">
 <Doc path={`examenes/${id}`} let:data let:ref log >
-<div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic"></span></div>
+<div slot="loading"><div uk-spinner></div></div>
 <!-- Aviso -->
 <div class="uk-alert-primary" uk-alert>
     <a class="uk-alert-close" uk-close></a>
@@ -164,12 +248,16 @@ on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
 <div slot="fallback">
     <div class="uk-alert-danger" uk-alert>
     <a class="uk-alert-close" uk-close></a>
-        <p>El examen no existe.</p>
+        <p><span uk-icon="warning"></span> Error! Código incorrecto. Intente nuevamente o póngase en contacto con su profesor.</p>
     </div>
 </div>
-<TIMER minut={moment.duration(data.finaliza - data.inicia).asMinutes()} />
 </Doc>
-
 </div>
+
+{/if}
+
+    </Doc>
+{/if}
+</Collection>
 </User>
 </FirebaseApp>
