@@ -9,6 +9,7 @@
 	let _date = moment().format('dddd Do [de] MMMM [del] YYYY');
 	import 'moment/locale/es';
 	import { onMount } from 'svelte';
+	import { Router, Route, Link } from 'yrv';
 	let time = new Date();
 
 	$: hours = time.getHours();
@@ -23,22 +24,27 @@
 		return () => {
 			clearInterval(interval);
 		};
+
 	});
 
-	//Routes
-	import { Link } from 'yrv';
 	import sha512 from 'crypto-js/sha512';
 	import Cookies from 'js-cookie';
-
 	let codigo = '';
 	let promise;
-	
-
+	let showBtnIra = false;
 	let documento;
-
-	const addControlTest = async () => {
+	
+	const addControlTest = async (cod) => {
 	/* Verifico si el codigo del examen es correcto */
-	let eRef = await db.doc(`examenes/${codigo}`);
+	if(cod === ""){
+		UIkit.notification({
+			message:"<span uk-icon='icon: warning'></span> Error!! Solicita al profesor un código.",
+			pos: "top-center",
+			status: "danger",
+			timeout: 2000
+		});
+	}else{
+	let eRef = await db.doc(`examenes/${cod}`);
 	promise = eRef.get().then(async function(docSnapshot) {
 			if (!docSnapshot.exists) {
 					eRef.onSnapshot((doc) => {
@@ -69,34 +75,26 @@
 							codigodeExamen: codigo,
 							nombre: $_displayName,
 							}).then(function(){
-								window.location.href = `/${sha512('test')}/${codigo}/${$_userid}`
-								}) 
+								 showBtnIra = true;
+								}).catch(function(e){
+									showBtnIra =false;
+								})
 							}
 						})
 				}
 		}).catch(function(error) {
         	console.log("Error getting documents: ", error);
     	});
+	}
 }
-
 </script>
 
 <svelte:head>
 <title>Home</title>
 </svelte:head>
-
-
 <!-- Body -->
 <div class="uk-container">
-
-	<h1 class="uk-text-center uk-text-capitalize uk-margin-top">{_date} {hours}:{minutes<=9?"0"+minutes:minutes}:{seconds<=9?"0"+seconds:seconds}</h1>
-	
-	<!-- 
-		<Link href="/{sha512('create')}"><button class="uk-button uk-button-default" > Examenes</button></Link>
-		<Link on:click={() => location.href = `/${sha512('test')}/${codigo}/${$_userid}` } ></Link>
-	 -->
-
-
+<h1 class="uk-text-center uk-text-capitalize uk-margin-top">{_date} {hours}:{minutes<=9?"0"+minutes:minutes}:{seconds<=9?"0"+seconds:seconds}</h1>
 <FirebaseApp firebase={firebase} >
 <User let:user={user} let:auth={auth} on:user>
 
@@ -107,14 +105,26 @@
 		<span class="uk-text-meta">Solo tendrás una oportunidad, aprovéchala. Suerte!!</span>
 	</div>
 
-	 <div class="uk-margin">
-        <input class="uk-input" type="text" bind:value={codigo} placeholder="Codigo del examen">
-     </div>
-
-	 <div class="uk-margin">
-			<button class="uk-button uk-button-default" disabled={!codigo}
-			on:click={()=> addControlTest() }
-			> Comenzar con mi examen</button>
+	<div uk-grid>
+    <div>
+	<form on:submit|preventDefault={()=>{addControlTest(codigo)}}>
+		<div class="uk-margin">
+			<div class="uk-inline">
+				<a class="uk-form-icon" uk-icon="icon: unlock" on:click={()=> addControlTest(codigo) } ></a>
+				<input class="uk-input uk-form-width-large" type="text" bind:value={codigo} placeholder="Codigo del examen">
+			</div>
+		</div>
+	</form>
+	<div class="uk-margin">
+		<!-- <button class="uk-button uk-button-primary uk-width-1-1" disabled={!codigo || showBtnIra}
+		on:click={()=> addControlTest() }
+		> Comenzar con mi examen</button> -->
+		{#if showBtnIra}
+			<Link href="/{sha512('test')}/{codigo}/{$_userid}" ><button class="uk-button uk-button-primary uk-width-1-1">Ir a mi examen...</button></Link>
+		{/if}
+	</div>
+	</div>
+    <div></div>
 	</div>
 
 
