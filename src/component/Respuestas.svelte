@@ -24,7 +24,7 @@
 
 let corregido = false;
 let nota;
-
+import sha512 from 'crypto-js/sha512';
 </script>
 
     <svelte:head>
@@ -41,9 +41,25 @@ let nota;
             </ul>
         </div>
         <div class="uk-navbar-right">
-            
+            <ul class="uk-navbar-nav">
+             <li class="uk-active"><Link href="/{sha512('ingresos')}/{id}" ><span class="uk-margin-small-right" uk-icon="icon: cog; ratio: 2" uk-tooltip="title: Administrar ingresos; pos: left"></span></Link></li>
+            }
+            </ul>
         </div>
 </nav>
+
+<Doc path={`examenes/${id}`} let:data let:ref log >
+<div slot="loading"><div uk-spinner></div></div>
+<div class="uk-container uk-margin-bottom">
+<div class="uk-alert-primary" uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <span class="uk-text-meta">{data.titulo} - {data.descripcion}</span>
+    <p><span uk-icon="icon: calendar"></span> {moment(data.inicia).format("LLLL")} <span uk-icon="icon: calendar"></span> {moment(data.finaliza).format("LLLL")}. <span uk-icon="icon: clock"></span> 
+    {moment.duration(data.finaliza - data.inicia).asMinutes() === 1 ? moment.duration(data.finaliza - data.inicia).asMinutes() +' minuto.' : moment.duration(data.finaliza - data.inicia).asMinutes() +' minutos.' }</p>
+</div>
+</div>
+</Doc>
+
 <div class="uk-container">
 <Collection path={`respuestas`} query={ (ref) => ref.where("idexamen","==",`${id}`)} let:data let:ref log>
 <div class="uk-container uk-margin-top" slot="loading"><div uk-spinner></div></div>
@@ -54,7 +70,7 @@ let nota;
 <div class="uk-width-auto@m">
 
 <table class="uk-table uk-table-divider uk-table-small">
-<thead>
+    <thead>
     <tr>
         <th>Nombre</th>
         <th>Ev</th>
@@ -79,22 +95,16 @@ let nota;
 <div class="uk-width-expand@m">
 <Doc path={`respuestas/${itemId}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div></div>
-    <div slot="fallback">
-        <div uk-alert>
-            <a class="uk-alert-close" uk-close></a>
-            <h3>Información</h3>
-            <p><span uk-icon="icon: search" ></span> Debe seleccionar un examen.</p>
-        </div>
-    </div>
 
+<div slot="default">
 <div class="uk-background-muted uk-padding-small uk-panel">
     <div class="uk-clearfix">
         <div class="uk-float-right">
            <label><input class="uk-checkbox" type="checkbox" bind:this={corregido} checked={data.corregido} 
-           on:change={()=> ref.update({corregido: corregido.checked}) }
+           on:change={async ()=> await ref.update({respuestas:content.html ,corregido: corregido.checked}) }
             > Marcar como Evaluado</label> 
             <a href="javascript:void(0);" uk-icon="icon: trash" on:click={() => {
-                    UIkit.modal.confirm('Esta seguro que desea eliminar este examen!').then(function() {
+                    UIkit.modal.confirm(`Esta seguro que desea eliminar el examen de ${data.nombre}`).then(function() {
                     ref.delete().then(()=>{
                     UIkit.notification({message: `<span uk-icon='icon: trash'></span> Examen eliminado éxitosamente.`, pos: 'top-center', status: 'primary'})
                     })
@@ -105,7 +115,7 @@ let nota;
             > </a>
         </div>
         <div class="uk-float-left">
-             Preguntas para {data.nombre}
+            {data.nombre}
         </div>
     </div>
 </div>
@@ -116,8 +126,6 @@ let nota;
 {/each}
 
 <main>
-   
-   
 <div class="uk-clearfix uk-background-muted uk-padding-small">
     <div class="uk-float-right">
         <input class="uk-input uk-form-width-small" min="1" type="number" value={data.nota} bind:this={nota} step="0.5" max="10" placeholder="Nota"
@@ -132,7 +140,17 @@ let nota;
   {@html data.respuestas}
   </div>
 </main>
+<p>El examen se realizo {data.expired?" fuera de tiempo":" en tiempo programado"} el dia {moment(data.fecha).format("LLLL")}</p>
 
+</div>
+
+<div slot="fallback">
+    <div uk-alert>
+        <a class="uk-alert-close" uk-close></a>
+        <h3>Información</h3>
+        <p><span uk-icon="icon: search" ></span> Debe seleccionar un examen.</p>
+    </div>
+</div>
 </Doc>
 </div>
 </div>

@@ -17,7 +17,7 @@
 	// Initialize Firebase
 	firebase.initializeApp(firebaseConfig);
 
-    import {_userid} from "./store/store.js";
+    import { _userid, _displayName} from "./store/store.js";
 	firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       // User is signed in.
@@ -30,6 +30,7 @@
       var providerData = user.providerData;
       var tel = user.phoneNumber;
       _userid.set(user.uid);
+      _displayName.set(user.displayName);
         if (typeof(Storage) !== 'undefined') {
             localStorage.setItem('user', user.email);
             sessionStorage.setItem('user', user.email)
@@ -64,6 +65,7 @@
     import newx from "./component/New.svelte";
     import test from "./student/Examen.svelte";
     import respuestas from "./component/Respuestas.svelte";
+    import ingresos from "./component/Ingresos.svelte";
 
 
 	import sha512 from 'crypto-js/sha512';
@@ -127,6 +129,7 @@
 	  <Route path="/{sha512('test')}/:id/:user" exact component={test} />
       <Route path="/{sha512('new')}" exact component={newx} />
       <Route path="/{sha512('respuestas')}/:id" exact component={respuestas} />
+      <Route path="/{sha512('ingresos')}/:id" exact component={ingresos} />
   </Router> 
 
   

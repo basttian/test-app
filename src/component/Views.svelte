@@ -101,7 +101,7 @@ const copyTextToClipboard = (v) => {
                     <div class="uk-accordion-content">
                     <Link class="uk-link-reset uk-icon-link uk-margin-small-right" href="/{sha512('update')}/{item.id}" uk-tooltip="Editar." ><span uk-icon="file-edit"></span></Link>
                     <Link href="/{sha512('respuestas')}/{item.id}" class="uk-icon-link" uk-icon="icon: folder" uk-tooltip="Corregir examenes."> </Link>
-                    <Link href="" class="uk-icon-link" uk-icon="icon: database" uk-tooltip="Ingresos al examen."> </Link>
+                    <Link href="/{sha512('ingresos')}/{item.id}" class="uk-icon-link" uk-icon="icon: database" uk-tooltip="Administrar ingresos."> </Link>
                     <a href="javascript:void(0)" class="uk-icon-link" uk-tooltip="Eliminar." uk-icon="trash" on:click={()=> delExamen(item.id) } > </a>
                     </div>
                 </li>

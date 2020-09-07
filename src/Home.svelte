@@ -3,7 +3,7 @@
 	import firebase from "firebase/app";
 	import "firebase/firestore";
 	const db = firebase.firestore();
-    import { _userid } from "./store/store.js"
+    import { _userid, _displayName } from "./store/store.js"
 	//I love moment
 	import moment from 'moment';
 	let _date = moment().format('dddd Do [de] MMMM [del] YYYY');
@@ -67,6 +67,7 @@
 							ingreso:moment().valueOf(),
 							uid: $_userid,
 							codigodeExamen: codigo,
+							nombre: $_displayName,
 							}).then(function(){
 								window.location.href = `/${sha512('test')}/${codigo}/${$_userid}`
 								}) 
