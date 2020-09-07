@@ -87,7 +87,7 @@ const copyTextToClipboard = (v) => {
     <div class="uk-container uk-margin-top">
         <div class="uk-alert-uk-alert-primary" uk-alert>
             <a class="uk-alert-close" uk-close></a>
-            <p><span uk-icon="icon: info"></span> Aun no tienes examenes.</p>
+            <p><span uk-icon="icon: info"></span> Aun no has creado examenes.</p>
         </div>
     </div>
 {:else}

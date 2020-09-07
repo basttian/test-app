@@ -18,13 +18,16 @@
     let itemId = '0';
 
     import { quill } from 'svelte-quill'
-	let options = { placeholder: "Write something from outside...", }
-	let content = { html: '', text: ''};
+	let options = { placeholder: "Aqui debes colocar las correcciones que vera el estudiante..." }
+    let content = { html: '', text: ''};
 
 
 let corregido = false;
 let nota;
 import sha512 from 'crypto-js/sha512';
+/* por defecto se carga el examen original */
+let scoops = false;
+
 </script>
 
     <svelte:head>
@@ -101,7 +104,7 @@ import sha512 from 'crypto-js/sha512';
     <div class="uk-clearfix">
         <div class="uk-float-right">
            <label><input class="uk-checkbox" type="checkbox" bind:this={corregido} checked={data.corregido} 
-           on:change={async ()=> await ref.update({respuestas:content.html ,corregido: corregido.checked}) }
+           on:change={async ()=> await ref.update({corregido: corregido.checked}) }
             > Marcar como Evaluado</label> 
             <a href="javascript:void(0);" uk-icon="icon: trash" on:click={() => {
                     UIkit.modal.confirm(`Esta seguro que desea eliminar el examen de ${data.nombre}`).then(function() {
@@ -125,9 +128,11 @@ import sha512 from 'crypto-js/sha512';
 </div>
 {/each}
 
-<main>
+
 <div class="uk-clearfix uk-background-muted uk-padding-small">
     <div class="uk-float-right">
+        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={false}> Original</label>
+        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={true}> Corregido</label>
         <input class="uk-input uk-form-width-small" min="1" type="number" value={data.nota} bind:this={nota} step="0.5" max="10" placeholder="Nota"
         on:change={()=> ref.update({nota: nota.value}) }
         ><span class="uk-float-right" uk-icon="icon: file-edit; ratio: 2"></span>
@@ -136,12 +141,29 @@ import sha512 from 'crypto-js/sha512';
         <h3 class="uk-float-left">Respuestas</h3>
     </div>
 </div>
-  <div class="editor" use:quill={options} on:text-change={e => content = e.detail}>
-  {@html data.respuestas}
-  </div>
+<!-- Editor Quill -->
+ {#if scoops} 
+<main>
+    <div class="editor" use:quill={options} on:text-change={e => content = e.detail} >
+        {@html data.correcciones}
+    </div>
 </main>
-<p>El examen se realizo {data.expired?" fuera de tiempo":" en tiempo programado"} el dia {moment(data.fecha).format("LLLL")}</p>
+{:else}
+<main>
+    <div class="editor" use:quill={options} on:text-change={e => content = e.detail} >
+        {@html data.respuestas}
+    </div>
+</main>
+{/if}
 
+    <div class="uk-background-muted uk-padding-small uk-panel">
+        <button class="uk-button uk-button-text"
+        on:click={()=> ref.update({correcciones:content.html})
+        .then(resp=>{UIkit.notification("<span uk-icon='icon: check'></span> Correcciones enviadas exitosamente")}) }
+        >Enviar correcciones</button>
+    </div>
+
+<p>El examen se realizo {data.expired?" fuera de tiempo":" en tiempo programado"} el dia {moment(data.fecha).format("LLLL")}</p>
 </div>
 
 <div slot="fallback">

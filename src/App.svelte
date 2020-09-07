@@ -64,6 +64,7 @@
 	import update from "./component/Update.svelte";
     import newx from "./component/New.svelte";
     import test from "./student/Examen.svelte";
+    import evaluaciones from "./student/Evaluaciones.svelte";
     import respuestas from "./component/Respuestas.svelte";
     import ingresos from "./component/Ingresos.svelte";
 
@@ -108,8 +109,9 @@
     <div uk-dropdown="pos: top-right">
     <ul class="uk-nav uk-dropdown-nav">
         <li><Link  class="uk-active uk-nav-header" href="/">pagina principal</Link></li>
-        <li><Link href="/{sha512('view')}">Mis examenes</Link></li>
-        <li><Link href="/{sha512('new')}">Nuevo examen</Link></li>
+        <li><Link href="/{sha512('view')}"><span uk-icon="icon: folder"></span> Examenes</Link></li>
+        <li><Link href="/{sha512('new')}"><span uk-icon="icon: file-edit"></span> Nuevo examen</Link></li>
+        <li><Link href="/{sha512('evaluaciones')}"><span uk-icon="icon: file-text"></span> Mis evaluaciones</Link></li>
         <li class="uk-nav-divider"></li>
         <li><a href="javascript:void(0);" on:click={()=>{Salir(auth)}} >Cerrar Sesión</a></li>
     </ul>
@@ -130,6 +132,7 @@
       <Route path="/{sha512('new')}" exact component={newx} />
       <Route path="/{sha512('respuestas')}/:id" exact component={respuestas} />
       <Route path="/{sha512('ingresos')}/:id" exact component={ingresos} />
+       <Route path="/{sha512('evaluaciones')}" exact component={evaluaciones} />
   </Router> 
 
   

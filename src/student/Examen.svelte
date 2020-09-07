@@ -49,7 +49,9 @@
     let dni = '';
     let disablebtn = false;
  /* buscamos duplicados  */
+ let handlerSecond = 1;//creo la variable que me permitira detenere el tiempo si el estudiante presiono el boton de envio.
 const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
+    handlerSecond = 0;
     disablebtn = true;
     let rRef = await db.collection(`respuestas`).where('uid','==', _usuario ).where('idexamen','==',id);
     promise = rRef.get().then(async collections => {
@@ -94,13 +96,18 @@ let promise;
 
 import TIMER from "./Timer.svelte";
 import CRONOMETRO from "./Cronos.svelte";
+/* Importo el temporizador */
 import { onInterval } from '../store/utils.js';
 let testTime ;
-onInterval(() => testTime -= 1, 1000);
+/* Comienza a correr automaticamente con el valor de tiempo para el examen*/
+/* handlerSecond se inicializa en 1 */
+onInterval(() => testTime -= handlerSecond, 1000);
+/* Si testTime llega a cero se ejecuta la funcion Guardar fuera de tiempo */
 $: if (testTime === 0){
         SaveTimeOut();
     }
 async function  SaveTimeOut(){
+    /* Verificamos que el estudiante no posea respuesta para ese examen */
    let rRef = await db.collection(`respuestas`).where('uid','==', _usuario ).where('idexamen','==',id);
     promise = rRef.get().then(async collections => {
       collections.forEach(collection => {
@@ -108,6 +115,7 @@ async function  SaveTimeOut(){
           UIkit.notification({message:"<span uk-icon='icon: warning'></span> Error! Su examen ya se encuentra registrado. ",status: "danger"});
           return;
       });
+      /* Si no hay examen previo del alumno guardamos la informacion */
         if(collections.empty){
         await db.collection(`respuestas`).add({
                 fecha:moment().valueOf(),
@@ -126,6 +134,7 @@ async function  SaveTimeOut(){
                 status: 'danger',
                 pos: 'top-center',
                 timeout: 5000 });
+                /* Disable boton de envio del examen */
                 disablebtn=true;
             }).catch(e=>{
                 console.log(e);
@@ -134,6 +143,7 @@ async function  SaveTimeOut(){
     });
 }
 
+/* No se - despues lo veo */
 import Cookies from 'js-cookie';
 let uidingreso;
 
