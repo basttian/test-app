@@ -105,7 +105,7 @@
 		<span class="uk-text-meta">Solo tendrás una oportunidad, aprovéchala. Suerte!!</span>
 	</div>
 
-	<div uk-grid>
+	<div class="uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>
     <div>
 	<form on:submit|preventDefault={()=>{addControlTest(codigo)}}>
 		<div class="uk-margin">

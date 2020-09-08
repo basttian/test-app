@@ -105,7 +105,7 @@
     <div class="uk-navbar-right uk-margin-right">
          
 <div class="uk-inline">
-    <span uk-icon="grid"></span>
+    <span uk-icon="icon: grid; ratio: 1.2"></span>
     <div uk-dropdown="pos: top-right">
     <ul class="uk-nav uk-dropdown-nav">
         <li><Link  class="uk-active uk-nav-header" href="/">pagina principal</Link></li>
@@ -113,10 +113,10 @@
         <li><Link href="/{sha512('new')}"><span uk-icon="icon: file-edit"></span> Nuevo examen</Link></li>
         <li><Link href="/{sha512('evaluaciones')}"><span uk-icon="icon: file-text"></span> Mis evaluaciones</Link></li>
         <li class="uk-nav-divider"></li>
-        <li><a href="javascript:void(0);" on:click={()=>{Salir(auth)}} >Cerrar Sesión</a></li>
+        <li><a href="javascript:void(0);" on:click={()=>{Salir(auth)}} ><span uk-icon="icon: sign-out"></span> Salir</a></li>
     </ul>
     </div>
-    <button uk-tooltip="title: Salir; pos: bottom" on:click={()=>{Salir(auth)}} uk-icon="sign-out"></button>
+    <!-- <button uk-tooltip="title: Salir; pos: bottom" on:click={()=>{Salir(auth)}} uk-icon="sign-out"></button> -->
 </div>
 
     </div>
