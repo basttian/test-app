@@ -84,6 +84,8 @@
 	    });
 	}
 
+
+
 </script>
 
 <FirebaseApp {firebase}>
@@ -124,6 +126,8 @@
  </div>
 
 
+
+<main uk-height-viewport="expand: true">
   <Router>
       <Route path="/" exact component={home}/>
 	  <Route exact path="/{sha512('view')}" component={views}/><!-- wtf - Porque? Para Que?  -->
@@ -134,12 +138,10 @@
       <Route path="/{sha512('ingresos')}/:id" exact component={ingresos} />
        <Route path="/{sha512('evaluaciones')}" exact component={evaluaciones} />
   </Router> 
-
-  
-
-
-
-
+</main>
+  <footer>
+    <div class="uk-background-default uk-padding uk-panel"></div>
+  </footer>
 
 <!-- Btn Ingreso Google  -->
 <div slot="signed-out">
@@ -166,3 +168,5 @@
 
  </User>
 </FirebaseApp>
+
+

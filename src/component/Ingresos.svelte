@@ -79,7 +79,7 @@
     	{/each}
     </tbody>
 </table>
-<p><span class="uk-label uk-label-warning">Nota</span> Para habilitar el ingreso al examen nuevamente, debe eliminar el registro.Una vez eliminado el registro el estudiante podra ingresar al examen, pero no podra realizarlo hasta que se elimine el examen previo.</p>
+<p><span class="uk-label uk-label-danger">Importante!!</span> Para habilitar el ingreso al examen nuevamente, debe eliminar el registro.Una vez eliminado el registro el estudiante podra ingresar al examen, pero no podra realizarlo hasta que se elimine el examen previo.</p>
 </div>
 
 

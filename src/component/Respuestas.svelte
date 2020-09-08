@@ -17,8 +17,29 @@
     const _usuario = get(_userid);
     let itemId = '0';
 
+    /* Quill Editor I l it */
     import { quill } from 'svelte-quill'
-	let options = { placeholder: "Aqui debes colocar las correcciones que vera el estudiante..." }
+    var toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+          ['blockquote', 'code-block'],
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+          [{ 'direction': 'rtl' }],                         // text direction
+          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+          [{ 'font': [] }],
+          [{ 'align': [] }],
+          ['clean']                                         // remove formatting button
+    ];
+	let options = { 
+          modules: {
+            toolbar: toolbarOptions
+          },
+          placeholder: 'Aqui debes colocar las correcciones que vera el estudiante...',
+    };
     let content = { html: '', text: ''};
 
 
@@ -28,6 +49,14 @@ import sha512 from 'crypto-js/sha512';
 /* por defecto se carga el examen original */
 let scoops = false;
 
+/* Pring Test */
+import printJS from 'print-js';
+const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
+    let someJSONdata = [{ "nombre":nombre, "dni":dni, "nota":nota, "preguntas":[preguntas], "respuestas":[respuestas]  }];
+    printJS({printable: someJSONdata, properties: [{field:'preguntas', displayName:'Preguntas'},{field:'respuestas', displayName:'Respuestas'}], type: 'json', header: `<h3>Evaluacion de ${nombre}, DNI:${dni}, Nota: ${nota} </h3>` });
+}
+
+
 </script>
 
     <svelte:head>
@@ -35,6 +64,8 @@ let scoops = false;
         <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     </svelte:head>
     <!-- Body -->
+
+
 <FirebaseApp firebase={firebase}>
 <User let:user={user} let:auth={auth} >
 <nav class="uk-navbar-transparent" uk-navbar>
@@ -46,22 +77,25 @@ let scoops = false;
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
              <li class="uk-active"><Link href="/{sha512('ingresos')}/{id}" ><span class="uk-margin-small-right" uk-icon="icon: cog; ratio: 2" uk-tooltip="title: Administrar ingresos; pos: left"></span></Link></li>
-            }
+            
             </ul>
         </div>
 </nav>
 
+<div class="uk-container uk-margin-bottom">
 <Doc path={`examenes/${id}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div></div>
-<div class="uk-container uk-margin-bottom">
 <div class="uk-alert-primary" uk-alert>
     <a class="uk-alert-close" uk-close></a>
     <span class="uk-text-meta">{data.titulo} - {data.descripcion}</span>
     <p><span uk-icon="icon: calendar"></span> {moment(data.inicia).format("LLLL")} <span uk-icon="icon: calendar"></span> {moment(data.finaliza).format("LLLL")}. <span uk-icon="icon: clock"></span> 
     {moment.duration(data.finaliza - data.inicia).asMinutes() === 1 ? moment.duration(data.finaliza - data.inicia).asMinutes() +' minuto.' : moment.duration(data.finaliza - data.inicia).asMinutes() +' minutos.' }</p>
 </div>
+<div class="uk-container uk-margin-top" slot="fallback">
+    Unable to display ...
 </div>
 </Doc>
+</div>
 
 <div class="uk-container">
 <Collection path={`respuestas`} query={ (ref) => ref.where("idexamen","==",`${id}`)} let:data let:ref log>
@@ -69,9 +103,17 @@ let scoops = false;
 <div class="uk-container uk-margin-top" slot="fallback">
     Unable to display ...
 </div>
+<!-- Si no hay datos -->
+{#if data.length === 0}
+    <div class="uk-container uk-margin-top">
+        <div class="uk-alert-uk-alert-primary" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p><span uk-icon="icon: info"></span> Nada que corregir.</p>
+        </div>
+    </div>
+{:else}
 <div class="uk-grid-divider uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>
 <div class="uk-width-auto@m">
-
 <table class="uk-table uk-table-divider uk-table-small">
     <thead>
     <tr>
@@ -95,7 +137,9 @@ let scoops = false;
 
 
 </div>
+
 <div class="uk-width-expand@m">
+
 <Doc path={`respuestas/${itemId}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div></div>
 
@@ -106,41 +150,47 @@ let scoops = false;
            <label><input class="uk-checkbox" type="checkbox" bind:this={corregido} checked={data.corregido} 
            on:change={async ()=> await ref.update({corregido: corregido.checked}) }
             > Marcar como Evaluado</label> 
-            <a href="javascript:void(0);" uk-icon="icon: trash" on:click={() => {
+ 
+        <ul class="uk-iconnav">
+        <li><button class="uk-button" on:click={() => printEvaluacion(data.nombre,data.dni,data.nota,data.preguntas,data.respuestas) }><span uk-icon="icon: print"></span></button></li>
+        <li><button class="uk-button" on:click={() => {
                     UIkit.modal.confirm(`Esta seguro que desea eliminar el examen de ${data.nombre}`).then(function() {
-                    ref.delete().then(()=>{
+                        ref.delete().then(()=>{
                     UIkit.notification({message: `<span uk-icon='icon: trash'></span> Examen eliminado éxitosamente.`, pos: 'top-center', status: 'primary'})
-                    })
+                        })
                 }, function () {
                     UIkit.notification({message: "<span uk-icon='icon: warning'></span> Operación cancelada.", pos: 'top-center', status: 'danger'})
                 })
-            }}
-            > </a>
+            }}><span uk-icon="icon: trash"></span></button>
+        </li>
+        </ul>
         </div>
         <div class="uk-float-left">
-            {data.nombre}
+            {data.nombre}. DNI:{data.dni}
         </div>
     </div>
 </div>
+
+<span class="uk-text-large">Preguntas</span>
 {#each { length:data.preguntas.length } as item,i}
 <div class="uk-column-1-2@s">
 {`${i+1})`} {data.preguntas[i]}
 </div>
 {/each}
 
-
 <div class="uk-clearfix uk-background-muted uk-padding-small">
     <div class="uk-float-right">
-        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={false}> Original</label>
-        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={true}> Corregido</label>
-        <input class="uk-input uk-form-width-small" min="1" type="number" value={data.nota} bind:this={nota} step="0.5" max="10" placeholder="Nota"
-        on:change={()=> ref.update({nota: nota.value}) }
-        ><span class="uk-float-right" uk-icon="icon: file-edit; ratio: 2"></span>
+        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={false}> Enviado por el alumno </label>
+        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={true}> Mis correcciones </label>
+        <input class="uk-input uk-form-width-small" min="1" type="number" value={data.nota===0?'':data.nota} bind:this={nota} step="0.5" max="10" placeholder="Nota"
+        on:change={()=> ref.update({nota: Number(nota.value)}) }>
+        <span class="uk-float-right" uk-icon="icon: file-edit; ratio: 2"></span>
     </div>
     <div class="uk-float-left">
         <h3 class="uk-float-left">Respuestas</h3>
     </div>
 </div>
+
 <!-- Editor Quill -->
  {#if scoops} 
 <main>
@@ -153,17 +203,20 @@ let scoops = false;
     <div class="editor" use:quill={options} on:text-change={e => content = e.detail} >
         {@html data.respuestas}
     </div>
-</main>
+</main> 
 {/if}
+
+
 
     <div class="uk-background-muted uk-padding-small uk-panel">
         <button class="uk-button uk-button-text"
         on:click={()=> ref.update({correcciones:content.html})
         .then(resp=>{UIkit.notification("<span uk-icon='icon: check'></span> Correcciones enviadas exitosamente")}) }
-        >Enviar correcciones</button>
-    </div>
+         disabled={Number(content.text.length)<=3} >Enviar correcciones</button>
+    </div> 
 
 <p>El examen se realizo {data.expired?" fuera de tiempo":" en tiempo programado"} el dia {moment(data.fecha).format("LLLL")}</p>
+<p><span class="uk-label uk-label">Nota</span> No olvidar enviar las correcciones.</p>
 </div>
 
 <div slot="fallback">
@@ -173,9 +226,14 @@ let scoops = false;
         <p><span uk-icon="icon: search" ></span> Debe seleccionar un examen.</p>
     </div>
 </div>
+
+
+
 </Doc>
+
 </div>
 </div>
+{/if}
 </Collection>
 </div>
 </User>

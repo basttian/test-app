@@ -64,11 +64,27 @@ $: d = (i,f) => { return  moment.duration(moment.utc(moment(f).diff(moment(i))))
 let _i,_f,_t;
 $: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
 
+/* Carbon Icons */
+import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
+
 </script>
     <svelte:head>
         <title>Crear Examenes</title>
     </svelte:head>
     <!-- Body -->
+
+<nav class="uk-navbar-transparent" uk-navbar>
+    <div class="uk-navbar-left">
+        <ul class="uk-navbar-nav">
+            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2"></span></Link></li>
+        </ul>
+    </div>
+    <div class="uk-navbar-right">
+        <span class="uk-margin-right"><FolderAdd32 /></span>
+    </div>
+</nav>
+
+
 <div class="uk-container">
 <FirebaseApp firebase={firebase}>
     <User let:user={user} let:auth={auth} >

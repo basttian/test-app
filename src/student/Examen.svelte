@@ -39,10 +39,30 @@
         });
    })
 
-    /* I Lov */
-	import { quill } from 'svelte-quill'
-	let options = { placeholder: "Responde aquí.", }
-	let content = { html: '', text: ''};
+    /* Quill Editor I l it */
+    import { quill } from 'svelte-quill'
+    var toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+          ['blockquote', 'code-block'],
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+          [{ 'direction': 'rtl' }],                         // text direction
+          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+          [{ 'font': [] }],
+          [{ 'align': [] }],
+          ['clean']                                         // remove formatting button
+    ];
+	let options = { 
+          modules: {
+            toolbar: toolbarOptions
+          },
+          placeholder: 'Responde aquí...',
+    };
+    let content = { html: '', text: ''};
 
     /* Data */
     let estudiante = '';
@@ -80,7 +100,7 @@ const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
             //console.log(resp);
             UIkit.notification({
                 message:"<span uk-icon='icon: check'></span> Examen enviado éxitosamente.",
-                pos: "top-right",
+                pos: "top-center",
                 status: "primary"
                 });
         }).catch(error=>{
@@ -124,7 +144,7 @@ async function  SaveTimeOut(){
                 nombre:estudiante.value,
                 respuestas: content.html,
                 corregido: false,
-                nota: 1,
+                nota: 0,
                 preguntas: preguntas,
                 uid: _usuario,
                 expired: true,
@@ -191,7 +211,11 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
 <!-- Muestro el examen  -->
 <Doc path={`examenes/${id}`} let:data let:ref log on:data={(e) =>  e.empty ? 0 : testTime = moment.duration(e.detail.data.finaliza - e.detail.data.inicia).asSeconds() } >
 <div class="uk-float-right" slot="loading"><div uk-spinner></div></div>
-    <nav class="uk-navbar-transparent" uk-navbar>
+
+
+<div class="uk-preserve-color">
+    <div uk-sticky="offset: 85; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 85">
+    <nav class="uk-navbar-container" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
                 <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" 
@@ -202,6 +226,8 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
             <CRONOMETRO minut={moment.duration(data.finaliza - data.inicia).asMinutes() } />
         </div>
     </nav>
+    </div>
+</div>
     <div class="uk-container">
         <TIMER minut={moment.duration(data.finaliza - data.inicia).asMinutes()} />
     </div>
@@ -247,6 +273,10 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
 disabled={Number(content.text.length)<=3 || disablebtn || !dni || !estudiante}
 on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
 >Enviar respuesta</button>
+
+<p><span class="uk-label uk-label-warning">Nota</span> Asegúrate de colocar tu DNI antes de enviar el examen.</p>
+
+
 <!-- remember the promise u made -->
     {#await promise}
         <div class="uk-position-cover uk-overlay 

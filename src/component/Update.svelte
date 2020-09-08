@@ -57,6 +57,8 @@ let status = false;
 
     })
 
+/* Carbon Icons */
+import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
 
 </script>
     <svelte:head>
@@ -65,14 +67,14 @@ let status = false;
 
     <!-- Body -->
 
-<nav class="uk-navbar-container" uk-navbar>
+<nav class="uk-navbar-transparent" uk-navbar>
     <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
             <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2"></span></Link></li>
         </ul>
     </div>
     <div class="uk-navbar-right">
-        
+        <span class="uk-margin-right"><FolderDetails32 /></span>
     </div>
 </nav>
 

@@ -8,8 +8,29 @@
     import 'moment/locale/es';
     import { Router, Route, Link } from 'yrv';
  
+    /* Quill Editor I l it */
     import { quill } from 'svelte-quill'
-	let options = { placeholder: "..." }
+    var toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+          ['blockquote', 'code-block'],
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+          [{ 'direction': 'rtl' }],                         // text direction
+          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+          [{ 'font': [] }],
+          [{ 'align': [] }],
+          ['clean']                                         // remove formatting button
+    ];
+	let options = { 
+          modules: {
+            toolbar: toolbarOptions
+          },
+          placeholder: 'Aqui debes colocar las correcciones que vera el estudiante...',
+    };
     let content = { html: '', text: ''};
 
     import sha512 from 'crypto-js/sha512';
@@ -81,7 +102,7 @@
         <div class="uk-background-muted uk-padding-small uk-panel uk-margin-bottom">
             <p class="uk-h4">{data.nota===0?'Aun no tiene nota.': `Calificación: ${data.nota}`}</p>
         </div>
-    
+    <span class="uk-text-large">Preguntas del examen:</span>
     {#each { length:data.preguntas.length } as item,i}
      <p class="uk-text-bold">{`${i+1})`} {data.preguntas[i]}</p>
     {/each}
@@ -89,6 +110,7 @@
 
     <div uk-grid>
         <div>
+            <span class="uk-text-large">Tus respuestas:</span>
             <main>
                 <div class="editor" use:quill={options} on:text-change={e => content = e.detail} >
                     {@html data.respuestas}
@@ -99,6 +121,7 @@
             {#if data.correcciones === void 0}
                  El examen no presenta correcciones.
             {:else}
+            <span class="uk-text-large">Correcciones:</span>
             <main>
                 <div class="editor" use:quill={options} on:text-change={e => content = e.detail} >
                     {@html data.correcciones}
@@ -111,6 +134,7 @@
     </div>
 </div>
 {/if}
+<p></p>
 <div slot="fallback">
     Unable to display ...
 </div>
