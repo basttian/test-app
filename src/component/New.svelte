@@ -73,14 +73,18 @@ $: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
 <FirebaseApp firebase={firebase}>
     <User let:user={user} let:auth={auth} >
 
-        <div class="uk-clearfix uk-margin-top">
-            <div class="uk-float-right">
-                <div class="uk-card uk-card-default uk-card-body">El examen tendra una duración de {d(inicia,finaliza)<0?0:d(_i,_f)} minutos.</div>
-            </div>
-            <div class="uk-float-left">
-               <div class="uk-card uk-card-default uk-card-body"><span class="uk-text-emphasis">{cod}</span></div>
-            </div>
+<div class="uk-child-width-1-2@s uk-child-width-1-2@m uk-margin-small-top" uk-grid>
+    <div>
+        <div class="uk-card uk-card-default uk-card-body uk-width-1-1"><span class="uk-text-emphasis">{cod}</span>
         </div>
+    </div>  
+    <div> 
+        <div class="uk-card uk-card-default uk-card-body uk-width-1-1">
+            <span>El examen tendra una duración de {d(inicia,finaliza)<0?0:d(_i,_f)} minutos.</span>
+        </div>
+    </div> 
+</div>
+
     <fieldset class="uk-fieldset uk-margin-top">
         <legend class="uk-legend">Crear nuevo Examen</legend>
         <div class="uk-grid-small" uk-grid>
@@ -116,8 +120,6 @@ $: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
         Tiempo del examen: {d(inicia,finaliza)<0?0:d(inicia,finaliza)} minutos.
         - 
         Preguntas del examen ({remaining}) </legend>
-        <button class="uk-button uk-button-default uk-margin-top" on:click={add}>Agregar nueva pregunta</button>
-        <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>Quitar seleccionados</button>
         
     {#each preguntas as pregunta}
         <div class="uk-grid-small" uk-grid>
@@ -132,6 +134,9 @@ $: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
             </div>
         </div>
     {/each}
+
+    <button class="uk-button uk-button-default uk-margin-top" on:click={add}>Agregar nueva pregunta</button>
+    <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>Quitar seleccionados</button>
 
         <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
         disabled={!remaining>=1 || !d(inicia,finaliza)>=1 || titulo.length<8 || descripcion.length<8 }

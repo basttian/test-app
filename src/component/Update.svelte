@@ -36,8 +36,7 @@ let status = false;
 
     /* montamos las variables para los calculos del tiempo que tendra el examen */
     import { onMount } from 'svelte';
-    let _inicio, _fin, _tiempo;
-    $: _tiempo = moment.duration(moment.utc(moment(_fin).diff(moment(_inicio)))).asHours();
+    let _inicio, _fin;
 
     onMount(async () => {
 
@@ -59,9 +58,6 @@ let status = false;
     })
 
 
-  import View32 from "carbon-icons-svelte/lib/View32";
-
-
 </script>
     <svelte:head>
         <title>Crear Examenes</title>
@@ -76,7 +72,7 @@ let status = false;
         </ul>
     </div>
     <div class="uk-navbar-right">
-        <span class="uk-margin-right"><View32 /></span>
+        
     </div>
 </nav>
 
@@ -85,16 +81,22 @@ let status = false;
 <FirebaseApp firebase={firebase}>
     <User let:user={user} let:auth={auth} >
 <Doc path={`examenes/${id}`} let:data let:ref log >
-<div slot="loading"><div uk-spinner></div><span class="uk-text-muted uk-text-italic"></span></div>
+<div slot="loading"><div uk-spinner></div></div>
 
-        <div class="uk-clearfix">
-            <div class="uk-float-right">
-                <div class="uk-card uk-card-default uk-card-body">Tiempo estipulado: {(_tiempo).toFixed(0)}hs, que es el equivalente a {moment.duration(_fin - _inicio).asMinutes()} minutos.</div>
-            </div>
-            <div class="uk-float-left">
-               <div class="uk-card uk-card-default uk-card-body"><span class="uk-text-emphasis">{id}</span></div>
-            </div>
+
+<div class="uk-child-width-1-2@s uk-child-width-1-2@m uk-margin-small-top" uk-grid>
+    <div>
+        <div class="uk-card uk-card-default uk-card-body uk-child-width-1-2@s">
+            <span class="uk-text-emphasis">{id}</span>
         </div>
+    </div>
+    <div>
+        <div class="uk-card uk-card-default uk-card-body uk-child-width-1-2@s">
+            <span>Tiempo del examen: {moment.duration(_fin - _inicio).asMinutes()} minutos.</span>
+        </div>
+    </div>
+</div>
+
 
 <fieldset class="uk-fieldset uk-margin-top">
          <legend class="uk-legend">Modificar Examen </legend>

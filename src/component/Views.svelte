@@ -11,8 +11,8 @@ const delExamen = async(id) =>{
         db.collection("examenes").doc(`${id}`).delete().then(function() {
             UIkit.notification({
                 message: '<span uk-icon="icon: trash"></span> Examen eliminado correctamente.',
-                status: 'primary',
-                pos: 'top-right',
+                status: 'danger',
+                pos: 'top-center',
                 timeout: 1500
             });
             console.log("Document successfully deleted!");
@@ -24,7 +24,7 @@ const delExamen = async(id) =>{
             UIkit.notification({
                 message: '<span uk-icon="icon: check"></span> Cancelado.',
                 status: 'primary',
-                pos: 'top-right',
+                pos: 'top-center',
                 timeout: 1500
             });
         console.log('Rejected.')
@@ -91,7 +91,7 @@ const copyTextToClipboard = (v) => {
         </div>
     </div>
 {:else}
-<div class="uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+<div class="uk-child-width-1-1@s uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
     {#each data as item}
     <div>
         <div class="uk-card uk-card-primary uk-card-hover uk-card-body">
@@ -99,10 +99,18 @@ const copyTextToClipboard = (v) => {
                 <li>
                     <a class="uk-accordion-title" href="#"><span uk-icon="icon: grid"></span></a>
                     <div class="uk-accordion-content">
-                    <Link class="uk-link-reset uk-icon-link uk-margin-small-right" href="/{sha512('update')}/{item.id}" uk-tooltip="Editar." ><span uk-icon="file-edit"></span></Link>
-                    <Link href="/{sha512('respuestas')}/{item.id}" class="uk-icon-link" uk-icon="icon: folder" uk-tooltip="Corregir examenes."> </Link>
-                    <Link href="/{sha512('ingresos')}/{item.id}" class="uk-icon-link" uk-icon="icon: database" uk-tooltip="Administrar ingresos."> </Link>
-                    <a href="javascript:void(0)" class="uk-icon-link" uk-tooltip="Eliminar." uk-icon="trash" on:click={()=> delExamen(item.id) } > </a>
+
+
+                <div class="uk-flex">
+
+                    <Link class="uk-margin-auto-right uk-link-reset uk-icon-link" href="/{sha512('update')}/{item.id}" uk-icon="icon: file-edit; ratio:2" uk-tooltip="Editar." > </Link>
+                    <Link class="uk-margin-auto-right uk-link-reset uk-icon-link" href="/{sha512('respuestas')}/{item.id}" uk-icon="icon: folder; ratio:2" uk-tooltip="Corregir examenes."> </Link>
+                    <Link class="uk-margin-auto-right uk-link-reset uk-icon-link" href="/{sha512('ingresos')}/{item.id}" uk-icon="icon: database; ratio:2" uk-tooltip="Administrar ingresos."> </Link>
+                    <a class="uk-margin-auto-right uk-link-reset uk-icon-link" href="javascript:void(0)" uk-tooltip="Eliminar." uk-icon="icon:trash; ratio:2" on:click={()=> delExamen(item.id) } > </a>
+
+                </div>                  
+
+
                     </div>
                 </li>
             </ul>
