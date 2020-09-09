@@ -78,20 +78,14 @@
 	    	<tr>
 	            <td>{item.nombre}</td>
 	            <td>{moment(item.ingreso).format("LLLL")}</td>
-	            <td><a href="javascript:void(0);" uk-icon="icon: close"
-	            		on:click={()=> 
+	            <td><a href="javascript:void(0)" uk-icon="icon: close"	on:click={()=> {
 					UIkit.modal.confirm(`Esta seguro que desea eliminar el ingreso de ${item.nombre}`).then(function() {
                     item.ref.delete().then(()=>{
                     UIkit.notification({message: `<span uk-icon='icon: trash'></span> Ingreso eliminado éxitosamente.`, pos: 'top-center', status: 'primary'})
                     })
                 }, function () {
                     UIkit.notification({message: "<span uk-icon='icon: warning'></span> Operación cancelada.", pos: 'top-center', status: 'danger'})
-                })
-
-
-
-	            		 }
-	            	></a></td>
+                })}}></a> </td>
 	        </tr>	
     	{/each}
     </tbody>

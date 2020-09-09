@@ -84,14 +84,25 @@
 	    });
 	}
 
-
-
 </script>
+
+<svelte:head>
+<title>Iniciar sesión</title>
+
+<style>
+    body{
+        background-color:rgb(255, 255, 255);
+        }
+</style>
+
+
+</svelte:head>
+
+
+
 
 <FirebaseApp {firebase}>
 	<User let:user={user} let:auth={auth} >
-
-
 
 <div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
 <nav class="uk-navbar-container" uk-navbar>
@@ -140,22 +151,32 @@
   </Router> 
 </main>
   <footer>
-    <div class="uk-background-default uk-padding uk-panel"></div>
+    <div class="uk-background-default uk-padding uk-panel">
   </footer>
 
+
+
 <!-- Btn Ingreso Google  -->
-<div slot="signed-out">
+<div  slot="signed-out">
+
+<nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-left">
+        <span class="uk-navbar-item uk-logo"></span>
+    </div>
+</nav>
+<main uk-height-viewport="expand: true">
 <div class="uk-child-width-1-3@m" uk-grid uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 500; repeat: true">
 <div class="uk-position-small uk-position-center uk-overlay uk-overlay-default">
 <div class="uk-card uk-card-default uk-width-1-1@m ">
-    <div class="uk-card-header"></div>
+    <div class="uk-card-header uk-text-center">Debes iniciar sesión antes de comenzar.</div>
     <div class="uk-card-body uk-card-hover">
    <div class="uk-grid-small uk-flex-middle" uk-grid>
             <div class="uk-width-auto">
                <span uk-icon="icon: google; ratio: 3.5"></span>
             </div>
             <div class="uk-width-expand">
-                <h3 class="uk-card-title uk-margin-remove-bottom"><button class="uk-button uk-button-text" uk-tooltip="title: Ingresar..; pos: bottom"  on:click={() => auth.signInWithPopup(provider)} > Google account.</button></h3>
+                <h3 class="uk-card-title uk-margin-remove-bottom">
+                <button class="uk-button uk-button-text" uk-tooltip="title: Ingresar..; pos: bottom"  on:click={() => auth.signInWithPopup(provider)} > Google</button></h3>
                 {formatter.format($relog)}
             </div>
         </div>
@@ -164,8 +185,13 @@
 </div>
 </div>
 </div>
-</div> 
-
+</main>
+  <footer>
+    <div class="uk-background-muted uk-padding uk-panel">
+        <span class="uk-float-right uk-text-meta">Cybernetically enhanced web apps | <a href="https://svelte.dev/" target="_blank"><span class="uk-text-warning"> svelte</span></a></span>
+    </div>
+  </footer>
+</div>
  </User>
 </FirebaseApp>
 

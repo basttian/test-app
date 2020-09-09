@@ -18,13 +18,13 @@ let cod = '[Esperando codigo de examen..]';
         await db.collection(`examenes`).add({
           descripcion: descripcion,
           duracion: _f - _i,
-          finaliza:moment(finaliza).valueOf(),
-          inicia:moment(inicia).valueOf(),
+          finaliza:moment(_f).valueOf(),
+          inicia:moment(_i).valueOf(),
           preguntas: arr,
           status:status,
-          tiempo: _t,
           titulo:titulo,
-          uid: idusuario
+          uid: idusuario,
+          porfecha: porFecha
         }).then(function(i) {
             cod = i.id;
             UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen creado con éxito.", 
@@ -48,21 +48,22 @@ let cod = '[Esperando codigo de examen..]';
     $: remaining = preguntas.filter(t => !t.done).length;
 
 /* Variables  */
-let finaliza = moment().format("YYYY-MM-DDTHH:mm");
-let inicia = moment().format("YYYY-MM-DDTHH:mm");
+let finaliza;
+let inicia;
 let titulo = '';
 let descripcion ='';
 let status = false;
+let porFecha = false;
+
+/* Almaceno con el evento change */
+let _i,_f;
 
 
 /* Contar caracteres */
 $: l = (v) => {return v.length};
-/* Duracion del examen */
+/* Duracion del examen en minutos por fecha*/
 $: d = (i,f) => { return  moment.duration(moment.utc(moment(f).diff(moment(i)))).asMinutes(); };
 
-/* Noo see */
-let _i,_f,_t;
-$: _t = moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asHours();
 
 /* Carbon Icons */
 import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
@@ -96,16 +97,24 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
     </div>  
     <div> 
         <div class="uk-card uk-card-default uk-card-body uk-width-1-1">
-            <span>El examen tendra una duración de {d(inicia,finaliza)<0?0:d(_i,_f)} minutos.</span>
+            <span>El examen tendra una duración de {Math.floor( d(_i,_f)<0?0:d(_i,_f) )} minutos.</span>
         </div>
     </div> 
 </div>
-
+<h3 class="uk-heading-line uk-text-center"><span>Crear nuevo Examen</span></h3>
     <fieldset class="uk-fieldset uk-margin-top">
-        <legend class="uk-legend">Crear nuevo Examen</legend>
+        <legend class="uk-legend"></legend>
         <div class="uk-grid-small" uk-grid>
-        <div class="uk-width-1-1 uk-margin-top">
-            <label><input class="uk-checkbox" type="checkbox"  bind:checked={status} > Activo</label>
+        <div class="uk-width-1-1 uk-margin-top uk-background-muted uk-padding-small">
+
+<div class="uk-grid-small" uk-grid>
+<div class="uk-width-1-2@s">
+<label><input class="uk-checkbox" type="checkbox"  bind:checked={status} > Activo. </label>
+</div>
+<div class="uk-width-1-2@s">
+<label><input class="uk-checkbox" type="checkbox"  bind:checked={porFecha} > Programar examen para una fecha determinada.</label>
+</div>        
+</div>
         </div>
         <div class="uk-width-1-2@s uk-margin-top">
             <input class="uk-input {l(titulo)>8?'uk-form-success':'uk-form-danger'}" type="text" bind:value={titulo} placeholder="Título (+8)">
@@ -113,6 +122,7 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
         <div class="uk-width-1-2@s uk-margin-top">
             <textarea class="uk-textarea {l(descripcion)>8?'uk-form-success':'uk-form-danger'}" rows="3" bind:value={descripcion} placeholder="Descripción (+8)"></textarea>
         </div>
+        {#if porFecha}
         <!-- Fechas -->
         <div class="uk-width-1-2@s uk-margin-top">
             <label for="">Inicio</label>
@@ -129,11 +139,31 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
             on:change={({target: {value}})=> _f = moment(value).valueOf() }
             >
         </div>
+        {:else}
+            <!-- Relojes -->
+        <div class="uk-width-1-2@s uk-margin-top">
+            <label for="">Inicio</label>
+            <input class="uk-input {inicia>=finaliza?'uk-form-danger':'uk-form-success'}" 
+            type="time" bind:value={inicia} 
+            on:change={({target: {value}})=> _i = moment(value,"HH:mm") }
+            >
+        </div>
+
+        <div class="uk-width-1-2@s uk-margin-top">
+            <label for="">Fin</label>
+            <input class="uk-input {inicia>=finaliza?'uk-form-danger':'uk-form-success'}" 
+            type="time" bind:value={finaliza} 
+            on:change={({target: {value}})=> _f = moment(value, "HH:mm") }
+            >
+        </div>
+        {/if}
+
+         <!-- {inicia}<br>{finaliza}<br>{ moment.duration(moment.utc(moment(_f).diff(moment(_i)))).asMinutes()} -->
 
         </div>
         <!-- Preguntas para el array -->
         <legend class="uk-legend uk-margin-top uk-margin-bottom"> 
-        Tiempo del examen: {d(inicia,finaliza)<0?0:d(inicia,finaliza)} minutos.
+        Tiempo del examen: {Math.floor( d(_i,_f)<0?0:d(_i,_f) )} minutos.
         - 
         Preguntas del examen ({remaining}) </legend>
         
@@ -152,10 +182,10 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
     {/each}
 
     <button class="uk-button uk-button-default uk-margin-top" on:click={add}>Agregar nueva pregunta</button>
-    <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>Quitar seleccionados</button>
+    <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>Quitar pregunta seleccionada</button>
 
         <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
-        disabled={!remaining>=1 || !d(inicia,finaliza)>=1 || titulo.length<8 || descripcion.length<8 }
+        disabled={!remaining>=1 || Math.floor(Number(d(_i,_f)))<=0 || titulo.length<8 || descripcion.length<8 }
         on:click={()=> AddData(user.uid) }
         >Crear nuevo examen
         </button>

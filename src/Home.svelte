@@ -27,6 +27,10 @@
 
 	});
 
+	/* Funcional */
+    $: _tiempo = moment(time);
+
+
 	import sha512 from 'crypto-js/sha512';
 	import Cookies from 'js-cookie';
 	let codigo = '';
@@ -44,6 +48,7 @@
 			timeout: 2000
 		});
 	}else{
+
 	let eRef = await db.doc(`examenes/${cod}`);
 	promise = eRef.get().then(async function(docSnapshot) {
 			if (!docSnapshot.exists) {
@@ -55,7 +60,7 @@
 							timeout: 2000
 						});
 					});
-				} else {
+			} else {
 					/* Chequeo si el usuario ya ingreso a esa evaluacion */
 					let iRef = await db.collection(`ingresos`).where('uid','==',$_userid).where('codigodeExamen','==',codigo);
 					promise = iRef.get().then(async collections => {
@@ -87,17 +92,44 @@
     	});
 	}
 }
+
+	const copyTextToClipboard = (v) => {
+		try{
+			var unique = document.querySelectorAll('.unique');
+			var msg = `${v}` ;
+			unique.forEach(function (unique) {
+				msg+=unique.value;
+			});
+			var temp =document.createElement("textarea");
+			var tempMsg = document.createTextNode(msg);
+			temp.appendChild(tempMsg);
+			document.body.appendChild(temp);
+			temp.select();
+			document.execCommand("copy");
+			document.body.removeChild(temp);
+			UIkit.notification({
+				message: "<span uk-icon='icon: copy'></span> Copiado!",
+				status: 'primary',
+				pos: 'bottom-center',
+				timeout: 1000
+			}); 
+			}
+		catch(err) {
+			console.log("error");
+		}
+	}
+
+
 </script>
 
 <svelte:head>
 <title>Home</title>
 </svelte:head>
 <!-- Body -->
-<div class="uk-container">
-<h1 class="uk-text-center uk-text-capitalize uk-margin-top">{_date} {hours}:{minutes<=9?"0"+minutes:minutes}:{seconds<=9?"0"+seconds:seconds}</h1>
 <FirebaseApp firebase={firebase} >
 <User let:user={user} let:auth={auth} on:user>
-
+<div class="uk-container uk-margin-bottom">
+<h1 class="uk-text-center uk-text-capitalize uk-margin-top">{_date} {hours}:{minutes<=9?"0"+minutes:minutes}:{seconds<=9?"0"+seconds:seconds}</h1>
 	<p>Hola!! {user.displayName}, coloca el código de examen que te dio tu profesor.</p>
 	<div class="uk-alert-primary" uk-alert>
 		<a class="uk-alert-close" uk-close></a>
@@ -124,7 +156,8 @@
 		{/if}
 	</div>
 	</div>
-    <div></div>
+    <div>
+	</div>
 	</div>
 
 
@@ -135,7 +168,63 @@
         </div> 
     {/await}
 
+</div>
+
+
+
+<div class="uk-section uk-section-muted">
+    <div class="uk-container-expand">
+		<div class="uk-container">
+			<h3>Examenes programados.</h3>
+
+<Collection path={`examenes`} query={ref => ref.where('uid','==',user.uid).where("porfecha","==",true).where("status","==",true)} let:data let:ref log>
+<div slot="loading"><div uk-spinner></div></div>
+		{#if data.length === 0}
+			<div class="uk-container uk-margin-top">
+				<div class="uk-alert-uk-alert-primary" uk-alert>
+					<a class="uk-alert-close" uk-close></a>
+					<p><span uk-icon="icon: info"></span> Nada que mostrar.</p>
+				</div>
+			</div>
+		{:else}	
+			<div class="uk-grid-match uk-child-width-1-3@m uk-margin-top" uk-grid>
+
+				{#each data as examen}
+					
+					<div>
+						<h4 class="uk-heading-divider"><span uk-icon="icon: calendar"></span> {examen.titulo} </h4>
+						<span class="">{examen.descripcion}</span>
+						<span class="uk-text-bold">{moment(examen.inicia).format("LLLL")}</span>
+						{moment(examen.finaliza).format("LLLL")} 
+						<span class="uk-text-bold">Duración {moment.duration(examen.duracion).asMinutes()} minutos.</span>
+					    <div class="uk-margin">
+
+						{#if (examen.inicia<=_tiempo && examen.finaliza>=_tiempo ) }
+							<div class="uk-inline">
+								<a href="javascript:void(0)" class="uk-form-icon uk-form-icon-flip" uk-icon="icon: copy"
+								on:click={()=>{copyTextToClipboard(examen.id)}}></a>
+								<input class="uk-input uk-form-blank uk-form-width-large" value={examen.id} type="text">
+							</div>
+						{:else if examen.finaliza<=_tiempo}
+							<div class="uk-alert-danger" uk-alert>
+								<p><span uk-icon="icon: info"></span> El examen finalizo..</p>
+							</div>	
+						{:else}							
+							<div class="uk-alert-primary" uk-alert>
+								<p><span uk-icon="icon: warning"></span> El código no se encuentra disponible.</p>
+							</div>
+						{/if}
+						</div>
+					</div>
+
+				{/each}
+
+			</div>
+		{/if}
+</Collection>
+		
+		</div>
+    </div>
+</div>
 </User>
 </FirebaseApp>
-
-</div>

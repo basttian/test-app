@@ -112,9 +112,9 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
         <div class="uk-width-1-2@s uk-margin-top">
             <textarea class="uk-textarea" rows="3" placeholder="Descripción" bind:this={descripcion} >{data.descripcion}</textarea>
         </div>
-        <!-- Fechas -->
 
- 
+        {#if data.porfecha}
+        <!-- Fechas -->
         <div class="uk-width-1-2@s uk-margin-top">
             <label for="">Inicio</label>
             <input class="uk-input {_inicio>=_fin?'uk-form-danger':'uk-form-success'}" 
@@ -129,6 +129,26 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
             on:change={({target: {value}})=> _fin = moment(value).valueOf() }
             >
         </div>
+
+        {:else}
+        <!--Relojes -->
+        <div class="uk-width-1-2@s uk-margin-top">
+            <label for="">Inicio</label>
+            <input class="uk-input {_inicio>=_fin?'uk-form-danger':'uk-form-success'}" 
+            value={moment(data.inicia).format("HH:mm")} type="time" bind:this={inicia} 
+            on:change={({target: {value}})=> _inicio = moment(value,"HH:mm") }
+            >
+        </div>
+
+        <div class="uk-width-1-2@s uk-margin-top">
+            <label for="">Fin</label>
+            <input class="uk-input {_fin<=_inicio?'uk-form-danger':'uk-form-success'}" bind:this={finaliza}
+            value={moment(data.finaliza).format("HH:mm")} type="time"  
+            on:change={({target: {value}})=> _fin = moment(value,"HH:mm") }
+            >
+        </div>
+        {/if}
+
         </div>
 
         <legend class="uk-legend uk-margin-top uk-margin-bottom">Preguntas del examen ({remaining + Number(data.preguntas.length)}) </legend>
@@ -159,8 +179,8 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
             status:status.checked, 
             titulo:titulo.value, 
             descripcion:descripcion.value, 
-            inicia:moment(inicia.value).valueOf(), 
-            finaliza:moment(finaliza.value).valueOf(),
+            inicia: moment(_inicio).valueOf(), 
+            finaliza: moment(_fin).valueOf(),
             duracion: _fin - _inicio,
             uid: user.uid
         }).then(()=>{
