@@ -29,8 +29,6 @@
                 //_duracion = moment.utc(moment(_fin).diff(moment(_inicio))).format('HH:mm');
                 //_duracion = moment.duration(_fin - _inicio).asMinutes();
                 preguntas = doc.data().preguntas;
-                
-
             } else {
                 console.log("No such document!");
             }
@@ -43,18 +41,10 @@
     import { quill } from 'svelte-quill'
     var toolbarOptions = [
           ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-          ['blockquote', 'code-block'],
           [{ 'header': 1 }, { 'header': 2 }],               // custom button values
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-          [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-          [{ 'direction': 'rtl' }],                         // text direction
-          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
           [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-          [{ 'font': [] }],
-          [{ 'align': [] }],
-          ['clean']                                         // remove formatting button
+          [{ 'align': [] }]
     ];
 	let options = { 
           modules: {
@@ -63,6 +53,9 @@
           placeholder: 'Responde aquí...',
     };
     let content = { html: '', text: ''};
+
+
+let promise;
 
     /* Data */
     let estudiante = '';
@@ -112,7 +105,7 @@ const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
     })
 }
 
-let promise;
+
 
 import TIMER from "./Timer.svelte";
 import CRONOMETRO from "./Cronos.svelte";
@@ -126,7 +119,8 @@ onInterval(() => testTime -= handlerSecond, 1000);
 $: if (testTime === 0){
         SaveTimeOut();
     }
-async function  SaveTimeOut(){
+
+const SaveTimeOut = async() => {
     /* Verificamos que el estudiante no posea respuesta para ese examen */
    let rRef = await db.collection(`respuestas`).where('uid','==', _usuario ).where('idexamen','==',id);
     promise = rRef.get().then(async collections => {
@@ -137,7 +131,9 @@ async function  SaveTimeOut(){
       });
       /* Si no hay examen previo del alumno guardamos la informacion */
         if(collections.empty){
-        await db.collection(`respuestas`).add({
+
+     await db.collection(`respuestas`).add({
+
                 fecha:moment().valueOf(),
                 idexamen:`${id}`,
                 dni:dni,
@@ -172,6 +168,16 @@ let uidingreso;
         <title>Examen</title>
         <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     </svelte:head>
+
+
+<!-- remember the promise u made -->
+    {#await promise}
+        <div class="uk-position-cover uk-overlay 
+                    uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
+            <div uk-spinner="ratio: 3"></div>
+        </div> 
+    {/await}
+
 
 
     <!-- Body -->
@@ -211,10 +217,8 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
 <!-- Muestro el examen  -->
 <Doc path={`examenes/${id}`} let:data let:ref log on:data={(e) =>  e.empty ? 0 : testTime = moment.duration(e.detail.data.finaliza - e.detail.data.inicia).asSeconds() } >
 <div class="uk-float-right" slot="loading"><div uk-spinner></div></div>
-
-
 <div class="uk-preserve-color">
-    <div uk-sticky="offset: 85; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 85">
+    <div uk-sticky="offset: 0; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 0">
     <nav class="uk-navbar-container" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
@@ -267,7 +271,7 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
 
 </article>
 <!-- Panel de respuestas -->
-<div class="editor" use:quill={options} on:text-change={e => content = e.detail} />
+<div class="editor" use:quill={options} on:text-change={e => content = e.detail}></div>
 <!-- {@html content.html} -->
 <button class="uk-button uk-button-primary uk-margin" 
 disabled={Number(content.text.length)<=3 || disablebtn || !dni || !estudiante}
@@ -276,14 +280,6 @@ on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
 
 <p><span class="uk-label uk-label-warning">Nota</span> Asegúrate de colocar tu DNI antes de enviar el examen.</p>
 
-
-<!-- remember the promise u made -->
-    {#await promise}
-        <div class="uk-position-cover uk-overlay 
-                    uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
-            <div uk-spinner="ratio: 3"></div>
-        </div> 
-    {/await}
 <!-- Si no se encuentra -->
 <div slot="fallback">
     <div class="uk-alert-danger" uk-alert>
@@ -293,11 +289,12 @@ on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
 </div>
 </Doc>
 </div>
-
 {/if}
 
-    </Doc>
+</Doc>
 {/if}
 </Collection>
 </User>
 </FirebaseApp>
+
+

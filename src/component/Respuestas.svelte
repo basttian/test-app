@@ -34,6 +34,7 @@
           [{ 'align': [] }],
           ['clean']                                         // remove formatting button
     ];
+
 	let options = { 
           modules: {
             toolbar: toolbarOptions
@@ -56,6 +57,22 @@ const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
     printJS({printable: someJSONdata, properties: [{field:'preguntas', displayName:'Preguntas'},{field:'respuestas', displayName:'Respuestas'}], type: 'json', header: `<h3>Evaluacion de ${nombre}, DNI:${dni}, Nota: ${nota} </h3>` });
 }
 
+const printEvaluaciones = async() => {
+    var docRef = await db.doc(`examenes/${id}`);
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            printJS({ printable: 'printJS-lista', 
+                type: 'html', 
+                header: `${doc.data().titulo} - ${doc.data().descripcion} `,
+                ignoreElements:['noPrint']
+            })
+        } else {
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+}
 
 </script>
 
@@ -83,6 +100,22 @@ const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
 </nav>
 
 <div class="uk-container uk-margin-bottom">
+<Collection path={`examenes`} let:data let:ref query={ (ref) => ref.where("uid","==",`${user.uid}`)}  >
+<div slot="loading"><div uk-spinner></div></div>
+
+<!-- Verificamos si puede visualizar el componente respuestas -->
+{#if data.length === 0}
+    <div class="uk-container uk-margin-top">
+        <div class="uk-alert-uk-alert-primary" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p><span uk-icon="icon: info"></span> Nada Para corregir.</p>
+        </div>
+    </div>
+{:else}
+
+
+
+<div class="uk-container uk-margin-bottom">
 <Doc path={`examenes/${id}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div></div>
 <div class="uk-alert-primary" uk-alert>
@@ -96,6 +129,10 @@ const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
 </div>
 </Doc>
 </div>
+
+
+
+
 
 <div class="uk-container">
 <Collection path={`respuestas`} query={ (ref) => ref.where("idexamen","==",`${id}`)} let:data let:ref log>
@@ -114,9 +151,10 @@ const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
 {:else}
 <div class="uk-grid-divider uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>
 <div class="uk-width-auto@m">
-<table class="uk-table uk-table-divider uk-table-small">
+<a on:click={()=> printEvaluaciones() } uk-icon="icon: print"></a>
+<table class="uk-table uk-table-divider uk-table-small" id="printJS-lista">
     <thead>
-    <tr>
+    <tr id="noPrint">
         <th>Nombre</th>
         <th>Ev</th>
         <th>Nota</th>
@@ -127,9 +165,9 @@ const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
 {#each data as item}
     <tr>
         <td>{item.nombre}</td>
-        <td><span class="{item.corregido?'uk-label':'uk-label uk-label-danger'} ">{item.corregido?'Si':'No'}</span></td>
+        <td id="noPrint"><span class="{item.corregido?'uk-label':'uk-label uk-label-danger'} ">{item.corregido?'Si':'No'}</span></td>
         <td>{item.nota}</td>
-        <td><a uk-icon="icon: search" on:click={()=> itemId = item.id }></a></td>
+        <td id="noPrint"><a uk-icon="icon: search" on:click={()=> itemId = item.id }></a></td>
     </tr>
 {/each}
     </tbody>
@@ -142,8 +180,13 @@ const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
 
 <Doc path={`respuestas/${itemId}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div></div>
-
-<div slot="default">
+<div slot="fallback">
+    <div uk-alert>
+        <a class="uk-alert-close" uk-close></a>
+        <h3>Información</h3>
+        <p><span uk-icon="icon: search" ></span> Debe seleccionar un examen.</p>
+    </div>
+</div>
 <div class="uk-background-muted uk-padding-small uk-panel">
     <div class="uk-clearfix">
         <div class="uk-float-right">
@@ -217,21 +260,11 @@ const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
 
 <p>El examen se realizo {data.expired?" fuera de tiempo":" en tiempo programado"} el dia {moment(data.fecha).format("LLLL")}</p>
 <p><span class="uk-label uk-label">Nota</span> No olvidar enviar las correcciones.</p>
-</div>
-
-<div slot="fallback">
-    <div uk-alert>
-        <a class="uk-alert-close" uk-close></a>
-        <h3>Información</h3>
-        <p><span uk-icon="icon: search" ></span> Debe seleccionar un examen.</p>
-    </div>
-</div>
-
-
-
 </Doc>
-
 </div>
+</div>
+{/if}
+</Collection>
 </div>
 {/if}
 </Collection>

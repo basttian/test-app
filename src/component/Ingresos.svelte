@@ -26,6 +26,23 @@
     <!-- Body -->
 <FirebaseApp firebase={firebase}>
 <User let:user={user} let:auth={auth} >
+
+<Collection  path={`examenes`} query={ (ref) => ref.where("uid","==",`${user.uid}`)} let:data let:ref log>
+<div class="uk-container uk-margin-top" slot="loading"><div uk-spinner></div></div>
+<div class="uk-container uk-margin-top" slot="fallback">
+    Unable to display ...
+</div>
+<!-- Verificamos si puede visualizar el componente ingresos -->
+{#if data.length === 0}
+    <div class="uk-container uk-margin-top">
+        <div class="uk-alert-uk-alert-primary" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p><span uk-icon="icon: info"></span> Nada para mostrar.</p>
+        </div>
+    </div>
+{:else}
+
+
 <nav class="uk-navbar-transparent" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
@@ -85,5 +102,10 @@
 
 </Collection>
 </div>
+
+
+{/if}
+</Collection>
+
 </User>
 </FirebaseApp>

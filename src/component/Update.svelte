@@ -161,7 +161,6 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
             descripcion:descripcion.value, 
             inicia:moment(inicia.value).valueOf(), 
             finaliza:moment(finaliza.value).valueOf(),
-            tiempo: _tiempo,
             duracion: _fin - _inicio,
             uid: user.uid
         }).then(()=>{
