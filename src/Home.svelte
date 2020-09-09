@@ -177,7 +177,7 @@
 		<div class="uk-container">
 			<h3>Examenes programados.</h3>
 
-<Collection path={`examenes`} query={ref => ref.where('uid','==',user.uid).where("porfecha","==",true).where("status","==",true)} let:data let:ref log>
+<Collection path={`examenes`} query={ref => ref.where("porfecha","==",true).where("status","==",true)} let:data let:ref log>
 <div slot="loading"><div uk-spinner></div></div>
 		{#if data.length === 0}
 			<div class="uk-container uk-margin-top">
