@@ -108,14 +108,28 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
         <div class="uk-width-1-1 uk-margin-top uk-background-muted uk-padding-small">
 
 <div class="uk-grid-small" uk-grid>
+
+{#if porFecha}
 <div class="uk-width-1-2@s">
-<label><input class="uk-checkbox" type="checkbox"  bind:checked={status} > Activo. </label>
+<input class="uk-checkbox" type="checkbox"  bind:checked={status} >
+<span class="uk-text-bold"> Al activar la casilla el examen será visible en la página principal.</span>
 </div>
+{/if}
 <div class="uk-width-1-2@s">
-<label><input class="uk-checkbox" type="checkbox"  bind:checked={porFecha} > Programar examen para una fecha determinada.</label>
-</div>        
-</div>
+<div class="boundary-align uk-panel">
+<input class="uk-checkbox" type="checkbox"  bind:checked={porFecha} >
+<span class="uk-text-meta"> Programar examen para una fecha determinada.</span>
+    <span uk-icon="icon: info"></span>
+    <div uk-drop="pos: bottom-center; boundary: .boundary-align; boundary-align: true">
+        <div class="uk-card uk-card-body uk-card-secondary">
+           Al crear un examen programado, este será visible para cualquier usuario, pero no podrá realizar el examen si no hasta el día en el que se creó
         </div>
+    </div>
+</div>
+</div>
+</div>
+
+</div>
         <div class="uk-width-1-2@s uk-margin-top">
             <input class="uk-input {l(titulo)>8?'uk-form-success':'uk-form-danger'}" type="text" bind:value={titulo} placeholder="Título (+8)">
         </div>
@@ -191,7 +205,7 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
         </button>
     </fieldset>
     <!-- info -->
-    <p><span uk-icon="info"></span> El código del examen lo obtendra una vez generado el mismo.</p>
+    <p><span uk-icon="info"></span> El código lo obtendra una vez que termine de crear el examen.</p>
      </User>
 </FirebaseApp>
 </div>
