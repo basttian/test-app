@@ -103,10 +103,14 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
 <fieldset class="uk-fieldset uk-margin-top">
          <legend class="uk-legend">Modificar Examen </legend>
         <div class="uk-grid-small" uk-grid>
+
+        {#if data.porfecha}
         <div class="uk-width-1-1 uk-margin-top">
             <input class="uk-checkbox" type="checkbox" bind:this={status} checked={data.status} > 
             <span class="uk-text-meta"> Disponible para todo los usuarios. (Pagina principal)</span>
         </div>
+        {/if}
+        
         <div class="uk-width-1-2@s uk-margin-top">
             <input class="uk-input" type="text"  value={data.titulo} bind:this={titulo} placeholder="Título">
         </div>
