@@ -132,7 +132,7 @@
 <h1 class="uk-text-center uk-text-capitalize uk-margin-top">{_date} {hours}:{minutes<=9?"0"+minutes:minutes}:{seconds<=9?"0"+seconds:seconds}</h1>
 	<p>Hola!! {user.displayName}, coloca el código de examen que te dio tu profesor.</p>
 	<div class="uk-alert-primary" uk-alert>
-		<a class="uk-alert-close" uk-close></a>
+		<button class="uk-alert-close" uk-close></button>
 		<p><span uk-icon="info"></span> Información !! Al ingresar el tiempo <span uk-icon="icon: future"></span> comenzará a correr.</p>
 		<span class="uk-text-meta">Solo tendrás una oportunidad, aprovéchala. Suerte!!</span>
 	</div>
@@ -182,7 +182,6 @@
 		{#if data.length === 0}
 			<div class="uk-container uk-margin-top">
 				<div class="uk-alert-uk-alert-primary" uk-alert>
-					<a class="uk-alert-close" uk-close></a>
 					<p><span uk-icon="icon: info"></span> Nada que mostrar.</p>
 				</div>
 			</div>

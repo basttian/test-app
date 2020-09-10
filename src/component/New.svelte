@@ -7,35 +7,7 @@ import 'moment/locale/es';
 import { Router, Route, Link } from 'yrv';
 
 
-let preguntas = [];
-let cod = '[Esperando codigo de examen..]';
 
-  const AddData = async (idusuario) => {
-        let arr = [];
-            preguntas.forEach(element => {
-                arr.push(element.text);
-            });
-        await db.collection(`examenes`).add({
-          descripcion: descripcion,
-          duracion: _f - _i,
-          finaliza:moment(_f).valueOf(),
-          inicia:moment(_i).valueOf(),
-          preguntas: arr,
-          status:status,
-          titulo:titulo,
-          uid: idusuario,
-          porfecha: porFecha
-        }).then(function(i) {
-            cod = i.id;
-            UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen creado con éxito.", 
-            pos: 'top-center', 
-            status: 'primary',
-            timeout: 1000 
-            });
-        }).catch(error=>{
-            console.log(error);
-        })
-    }
 
     function add() {
         preguntas = preguntas.concat({ done: false, text: '' });
@@ -65,12 +37,67 @@ $: l = (v) => {return v.length};
 $: d = (i,f) => { return  moment.duration(moment.utc(moment(f).diff(moment(i)))).asMinutes(); };
 
 
+    /* Quill Editor I l it */
+    import { quill } from 'svelte-quill'
+    var toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+          ['blockquote', 'code-block'],
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+          [{ 'direction': 'rtl' }],                         // text direction
+          [{ 'align': [] }],
+          ['clean']  
+    ];
+
+	let options = { 
+          modules: {
+            toolbar: toolbarOptions
+          },
+          placeholder: 'Pregunta...',
+    };
+    let content = [{ html: '', text: ''}];
+
+
+let preguntas = [];
+let cod = '[Esperando codigo de examen..]';
+let arr = [];
+
+  const AddData = async (idusuario) => {
+         arr = [];
+            preguntas.forEach(function(element, index ) {
+                arr.push(content[index].html);/* element.text */
+            });
+        await db.collection(`examenes`).add({
+          descripcion: descripcion,
+          duracion: _f - _i,
+          finaliza:moment(_f).valueOf(),
+          inicia:moment(_i).valueOf(),
+          preguntas: arr,
+          status:status,
+          titulo:titulo,
+          uid: idusuario,
+          porfecha: porFecha
+        }).then(function(i) {
+            cod = i.id;
+            UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen creado con éxito.", 
+            pos: 'top-center', 
+            status: 'primary',
+            timeout: 1000 
+            });
+        }).catch(error=>{
+            console.log(error);
+        }) 
+    }
+
+
 /* Carbon Icons */
 import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
 
 </script>
     <svelte:head>
         <title>Crear Examenes</title>
+        <link href="/quill.snow.css" rel="stylesheet">
     </svelte:head>
     <!-- Body -->
 
@@ -181,16 +208,21 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
         - 
         Preguntas del examen ({remaining}) </legend>
         
-    {#each preguntas as pregunta}
+    {#each preguntas as pregunta, i}
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1">
                 <label><input class="uk-checkbox" type=checkbox bind:checked={pregunta.done} > Seleccionar para eliminar la pregunta.</label>
             </div>
             <div class="uk-width-1-1 uk-margin-top">
-                <input class="uk-input" bind:value={pregunta.text} 
+              <!--  <textarea class="uk-textarea" bind:value={pregunta.text}
                 disabled={pregunta.done} 
                 placeholder="Qué vas a preguntar?"
-                >
+                ></textarea> -->
+
+                <div class="uk-padding-small">
+                <div class="editor" use:quill={options} on:text-change={e => content[i] = e.detail} ></div>
+                </div>
+
             </div>
         </div>
     {/each}

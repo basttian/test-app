@@ -216,12 +216,12 @@ const printEvaluaciones = async() => {
 
 <span class="uk-text-large">Preguntas</span>
 {#each { length:data.preguntas.length } as item,i}
-<div class="uk-column-1-2@s">
-{`${i+1})`} {data.preguntas[i]}
+<div class="uk-column-1-1@s">
+{`${i+1})`} {@html data.preguntas[i]}
 </div>
 {/each}
 
-<div class="uk-clearfix uk-background-muted uk-padding-small">
+<div class="uk-clearfix uk-background-muted uk-padding-small uk-margin-top">
     <div class="uk-float-right">
         <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={false}> Enviado por el alumno </label>
         <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={true}> Mis correcciones </label>

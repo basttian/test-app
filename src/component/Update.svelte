@@ -26,9 +26,9 @@ let status = false;
     }
 
     /* Agregar elementos al arreglo preguntas */
-    const AgregarArrayPregunta = async(value)=>{
+    const AgregarArrayPregunta = async()=>{
         await db.collection(`examenes`).doc(`${id}`).update({
-            "preguntas": firebase.firestore.FieldValue.arrayUnion(`${value}`)
+            "preguntas": firebase.firestore.FieldValue.arrayUnion(`${content.html}`)
         }).then(()=>{
             text="";
         })
@@ -60,9 +60,33 @@ let status = false;
 /* Carbon Icons */
 import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
 
+
+    /* Quill Editor I l it */
+    import { quill } from 'svelte-quill'
+    var toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+          ['blockquote', 'code-block'],
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+          [{ 'direction': 'rtl' }],                         // text direction
+          [{ 'align': [] }],
+          ['clean']  
+    ];
+
+	let options = { 
+          modules: {
+            toolbar: toolbarOptions
+          },
+          placeholder: 'Pregunta...',
+    };
+    let content = { html: '', text: ''};
+
+
 </script>
     <svelte:head>
         <title>Crear Examenes</title>
+        <link href="/quill.snow.css" rel="stylesheet">
     </svelte:head>
 
     <!-- Body -->
@@ -104,12 +128,18 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
          <legend class="uk-legend">Modificar Examen </legend>
         <div class="uk-grid-small" uk-grid>
 
-        {#if data.porfecha}
+       
         <div class="uk-width-1-1 uk-margin-top">
             <input class="uk-checkbox" type="checkbox" bind:this={status} checked={data.status} > 
             <span class="uk-text-meta"> Disponible para todo los usuarios. (Pagina principal)</span>
+            <span uk-icon="icon: info"></span>
+            <div uk-drop="pos: bottom-center; boundary: .boundary-align; boundary-align: true">
+                <div class="uk-card uk-card-body uk-card-secondary">
+                 Esta opción es valida solo cuando se programa por fecha.
+                </div>
+            </div>
         </div>
-        {/if}
+      
         
         <div class="uk-width-1-2@s uk-margin-top">
             <input class="uk-input" type="text"  value={data.titulo} bind:this={titulo} placeholder="Título">
@@ -162,24 +192,31 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
          <div class="uk-width-1-1 uk-margin-top">
             <div class="uk-placeholder">
               {#each { length:data.preguntas.length } as p,i}
+                <div>
                <span class="uk-label uk-label-danger">
-               <a href="javascript:void(0)" uk-icon="icon: close" on:click={()=> DeleteArrayPreguntas(data.preguntas[i]) } ></a>
+               <a class="uk-text-middle" href="javascript:void(0)" uk-icon="icon: close" on:click={()=> DeleteArrayPreguntas(data.preguntas[i]) } ></a>
                </span>
-               <span class="uk-text-middle uk-margin-right">{data.preguntas[i]}</span>
+               <span class="uk-margin-right">{@html data.preguntas[i]}</span>
+                </div>
               {/each}
             </div>          
         </div>
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1 uk-margin-top">
-                <input class="uk-input" bind:value={text} 
+                <!-- <textarea class="uk-textarea" bind:value={text} 
                 on:change={({ target: { value } }) => AgregarArrayPregunta(value) }
-                placeholder="Nueva pregunta.">
+                placeholder="Nueva pregunta."></textarea> -->
+
+                <div class="uk-padding-small">
+                <div class="editor" use:quill={options} on:text-change={e => content = e.detail} ></div>
+                </div>
             </div>
         </div>
   
         <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
         disabled={!Number(data.preguntas.length)>=1 || Number(_fin) <= Number(_inicio) }
-        on:click={()=> {
+        on:click={()=> { 
+        AgregarArrayPregunta();
         ref.update({ 
             status:status.checked, 
             titulo:titulo.value, 

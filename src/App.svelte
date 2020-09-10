@@ -77,7 +77,12 @@
 	    UIkit.modal.confirm('Esta seguro que desea salir de la aplicación...').then(function() {
 	    //console.log('Confirmed.')
 	    user.signOut().then(resp => {
-	    UIkit.notification({message: '<span uk-icon=\'icon: check\'></span> Desconexión satisfactoria.', status: 'primary'});    
+	    UIkit.notification({
+        message: '<span uk-icon=\'icon: check\'></span> Desconexión satisfactoria.', 
+        status: 'primary',
+        pos: 'bottom-center',
+        timeout: 1000
+        });    
 	    });
 	    }, function () {
 	        //console.log('Rejected.')
@@ -103,7 +108,6 @@
 
 <FirebaseApp {firebase}>
 	<User let:user={user} let:auth={auth} >
-
 <div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
 <nav class="uk-navbar-container" uk-navbar>
     <div class="uk-navbar-left">

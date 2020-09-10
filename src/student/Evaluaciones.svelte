@@ -92,7 +92,7 @@
         </div>
     <span class="uk-text-large">Preguntas del examen:</span>
     {#each { length:data.preguntas.length } as item,i}
-     <p class="uk-text-bold">{`${i+1})`} {data.preguntas[i]}</p>
+     <p class="uk-text-small">{`${i+1})`} {@html data.preguntas[i]}</p>
     {/each}
 
 
