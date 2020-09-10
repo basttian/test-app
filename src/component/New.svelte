@@ -124,7 +124,7 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
     </div>  
     <div> 
         <div class="uk-card uk-card-default uk-card-body uk-width-1-1">
-            <span>El examen tendra una duración de {Math.floor( d(_i,_f)<0?0:d(_i,_f) )} minutos.</span>
+            <span>El examen tendrá una duración de {Math.floor( d(_i,_f)<0?0:d(_i,_f) )} minutos.</span>
         </div>
     </div> 
 </div>

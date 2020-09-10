@@ -25,13 +25,38 @@ let status = false;
         })
     }
 
+
+/* Quill Editor I l it */
+ import { quill } from 'svelte-quill';
+
+    var toolbarOptions = [
+          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+          ['blockquote', 'code-block'],
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+          [{ 'direction': 'rtl' }],                         // text direction
+          [{ 'align': [] }],
+          ['clean']  
+    ];
+
+	let options = { 
+          modules: {
+            toolbar: toolbarOptions
+          },
+          placeholder: 'Pregunta...',
+    };
+    let content = { html: '', text: '' };
+
     /* Agregar elementos al arreglo preguntas */
     const AgregarArrayPregunta = async()=>{
-        await db.collection(`examenes`).doc(`${id}`).update({
-            "preguntas": firebase.firestore.FieldValue.arrayUnion(`${content.html}`)
-        }).then(()=>{
-            text="";
-        })
+        if(content.text.length > 2){
+            await db.collection(`examenes`).doc(`${id}`).update({
+                "preguntas": firebase.firestore.FieldValue.arrayUnion(`${content.html}`)
+            }).then(()=>{
+                console.log("update")
+            });
+        }
     }
 
     /* montamos las variables para los calculos del tiempo que tendra el examen */
@@ -59,29 +84,6 @@ let status = false;
 
 /* Carbon Icons */
 import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
-
-
-    /* Quill Editor I l it */
-    import { quill } from 'svelte-quill'
-    var toolbarOptions = [
-          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-          ['blockquote', 'code-block'],
-          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-          [{ 'direction': 'rtl' }],                         // text direction
-          [{ 'align': [] }],
-          ['clean']  
-    ];
-
-	let options = { 
-          modules: {
-            toolbar: toolbarOptions
-          },
-          placeholder: 'Pregunta...',
-    };
-    let content = { html: '', text: ''};
-
 
 </script>
     <svelte:head>
