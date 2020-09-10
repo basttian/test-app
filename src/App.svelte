@@ -117,20 +117,22 @@
     </div>
     <div class="uk-navbar-right uk-margin-right">
          
-<div class="uk-inline">
-    <span uk-icon="icon: grid; ratio: 1.2"></span>
-    <div uk-dropdown="pos: top-right">
-    <ul class="uk-nav uk-dropdown-nav">
-        <li><Link  class="uk-active uk-nav-header" href="/">pagina principal</Link></li>
-        <li><Link href="/{sha512('view')}"><span uk-icon="icon: folder"></span> Examenes</Link></li>
-        <li><Link href="/{sha512('new')}"><span uk-icon="icon: file-edit"></span> Nuevo examen</Link></li>
-        <li><Link href="/{sha512('evaluaciones')}"><span uk-icon="icon: file-text"></span> Mis evaluaciones</Link></li>
+
+    <span uk-icon="icon: grid"></span>
+    <div uk-dropdown="animation: uk-animation-slide-top-small; duration: 500" id="drop">
+ 
+    <ul class="uk-nav uk-dropdown-nav uk-nav-primary uk-margin-auto-vertical">
+        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/">Página principal</Link></li>
+        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('view')}"><span uk-icon="icon: folder"></span> Examenes</Link></li>
+        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('new')}"><span uk-icon="icon: file-edit"></span> Nuevo examen</Link></li>
+        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('evaluaciones')}"><span uk-icon="icon: file-text"></span> Mis evaluaciones</Link></li>
         <li class="uk-nav-divider"></li>
         <li><a href="javascript:void(0);" on:click={()=>{Salir(auth)}} ><span uk-icon="icon: sign-out"></span> Salir</a></li>
     </ul>
+  
     </div>
     <!-- <button uk-tooltip="title: Salir; pos: bottom" on:click={()=>{Salir(auth)}} uk-icon="sign-out"></button> -->
-</div>
+
 
     </div>
 </nav>
@@ -159,16 +161,13 @@
 <!-- Btn Ingreso Google  -->
 <div  slot="signed-out">
 
-<nav class="uk-navbar-container" uk-navbar>
-    <div class="uk-navbar-left">
-        <span class="uk-navbar-item uk-logo"></span>
-    </div>
-</nav>
+<span class="uk-text-meta uk-margin uk-padding-small">Debes iniciar sesión antes de comenzar.</span>
+
 <main uk-height-viewport="expand: true">
 <div class="uk-child-width-1-3@m" uk-grid uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 500; repeat: true">
 <div class="uk-position-small uk-position-center uk-overlay uk-overlay-default">
 <div class="uk-card uk-card-default uk-width-1-1@m ">
-    <div class="uk-card-header uk-text-center">Debes iniciar sesión antes de comenzar.</div>
+    <div class="uk-card-header uk-text-center"></div>
     <div class="uk-card-body uk-card-hover">
    <div class="uk-grid-small uk-flex-middle" uk-grid>
             <div class="uk-width-auto">
