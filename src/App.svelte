@@ -114,6 +114,7 @@ document.onkeydown = function(){
 <style>
     body{
         background-color:rgb(255, 255, 255);
+        overscroll-behavior: none;
         }
 </style>
 
