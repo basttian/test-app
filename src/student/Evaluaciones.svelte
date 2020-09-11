@@ -28,12 +28,15 @@
 
     <svelte:head>
         <title>Mis evaluaciones</title>
-        <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <link href="/quill.snow.css" rel="stylesheet">
     </svelte:head>
     <!-- Body -->
 <FirebaseApp firebase={firebase}>
 <User let:user={user} let:auth={auth} >
-<nav class="uk-navbar-transparent" uk-navbar>
+
+<div class="uk-preserve-color">
+<div uk-sticky="offset: 0; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 0">
+<nav class="uk-navbar-container" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
                 <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
@@ -45,6 +48,9 @@
             </ul>
         </div>
 </nav>
+</div>
+</div>
+
 <div class="uk-container">
 <Collection path={`respuestas`} query={ (ref) => ref.where("uid","==",`${user.uid}`)} let:data let:ref log>
 <div slot="loading"><div uk-spinner></div></div>
@@ -63,6 +69,7 @@
  <ul class="uk-list uk-list-striped">
 {#each data as item} 
     <li>
+    <span class="{item.nota <= 6?'uk-label uk-label-danger':'uk-label uk-label-success'} ">{item.nota}</span>
     <span class="{item.corregido?'uk-label':'uk-label uk-label-danger'} ">{item.corregido?'Si':'No'}</span>
     {moment(item.fecha).format("LLLL")}  <a uk-icon="icon: search" on:click={() =>  idExamen={idex:`${item.idexamen}`,idDoc:`${item.id}`}  }></a></li>
 {/each}
@@ -72,11 +79,9 @@
     <div class="uk-width-expand@m">
     <Doc path={`examenes/${idExamen.idex}`} let:data let:ref log>
     <div slot="loading"><div uk-spinner></div></div>
-    <div class="uk-alert-primary" uk-alert>
-        <a class="uk-alert-close" uk-close></a>
-        <h3>{data.titulo}</h3>
-        <p>{data.descripcion}</p>
-    </div>
+
+    <h4 class="uk-heading-divider">{data.titulo} - {data.descripcion}</h4>
+
     <div slot="fallback">
         <div uk-alert>
             <a class="uk-alert-close" uk-close></a>

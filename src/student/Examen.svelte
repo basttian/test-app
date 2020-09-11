@@ -166,19 +166,8 @@ let uidingreso;
 </script>
     <svelte:head>
         <title>Examen</title>
-        <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <link href="/quill.snow.css" rel="stylesheet">
     </svelte:head>
-
-
-<!-- remember the promise u made -->
-    {#await promise}
-        <div class="uk-position-cover uk-overlay 
-                    uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
-            <div uk-spinner="ratio: 3"></div>
-        </div> 
-    {/await}
-
-
 
     <!-- Body -->
 <FirebaseApp firebase={firebase}>
@@ -297,4 +286,8 @@ on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
 </User>
 </FirebaseApp>
 
-
+{#await promise}
+    <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
+        <div uk-spinner="ratio: 3"></div>
+    </div> 
+{/await}

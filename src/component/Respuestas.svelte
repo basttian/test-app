@@ -86,7 +86,10 @@ const printEvaluaciones = async() => {
 
 <FirebaseApp firebase={firebase}>
 <User let:user={user} let:auth={auth} >
-<nav class="uk-navbar-transparent" uk-navbar>
+
+<div class="uk-preserve-color">
+<div uk-sticky="offset: 0; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 0">
+<nav class="uk-navbar-container" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
                 <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
@@ -99,6 +102,8 @@ const printEvaluaciones = async() => {
             </ul>
         </div>
 </nav>
+</div>
+</div>
 
 <div class="uk-container uk-margin-bottom">
 <Collection path={`examenes`} let:data let:ref query={ (ref) => ref.where("uid","==",`${user.uid}`)}  >
@@ -119,12 +124,13 @@ const printEvaluaciones = async() => {
 <div class="uk-container uk-margin-bottom">
 <Doc path={`examenes/${id}`} let:data let:ref log >
 <div slot="loading"><div uk-spinner></div></div>
-<div class="uk-alert-primary" uk-alert>
-    <a class="uk-alert-close" uk-close></a>
-    <span class="uk-text-meta">{data.titulo} - {data.descripcion}</span>
-    <p><span uk-icon="icon: calendar"></span> {moment(data.inicia).format("LLLL")} <span uk-icon="icon: calendar"></span> {moment(data.finaliza).format("LLLL")}. <span uk-icon="icon: clock"></span> 
-    {moment.duration(data.finaliza - data.inicia).asMinutes() === 1 ? moment.duration(data.finaliza - data.inicia).asMinutes() +' minuto.' : moment.duration(data.finaliza - data.inicia).asMinutes() +' minutos.' }</p>
-</div>
+
+
+<h4 class="uk-heading-divider">{data.titulo} - {data.descripcion}</h4>
+<p class="uk-text-meta"><span uk-icon="icon: calendar"></span> {moment(data.inicia).format("LLLL")} <span uk-icon="icon: calendar"></span> {moment(data.finaliza).format("LLLL")}. <span uk-icon="icon: clock"></span> 
+{moment.duration(data.finaliza - data.inicia).asMinutes() === 1 ? moment.duration(data.finaliza - data.inicia).asMinutes() +' minuto.' : moment.duration(data.finaliza - data.inicia).asMinutes() +' minutos.' }</p>
+
+
 <div class="uk-container uk-margin-top" slot="fallback">
     Unable to display ...
 </div>
@@ -148,8 +154,9 @@ const printEvaluaciones = async() => {
 {:else}
 <div class="uk-grid-divider uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>
 <div class="uk-width-auto@m">
-<a on:click={()=> printEvaluaciones() } uk-icon="icon: print"></a>
+
 <table class="uk-table uk-table-divider uk-table-small" id="printJS-lista">
+<caption><button class="uk-button uk-button-text" on:click={()=> printEvaluaciones() }> <span uk-icon="icon: print"></span> </button></caption>
     <thead>
     <tr id="noPrint">
         <th>-</th>
@@ -164,7 +171,7 @@ const printEvaluaciones = async() => {
     <tr>
         <td>
             
-            <a id="noPrint" on:click={() => {
+            <button class="uk-button uk-button-text" id="noPrint" on:click={() => {
                     UIkit.modal.confirm(`Esta seguro que desea eliminar el examen de ${item.nombre}`).then(function() {
                         item.ref.delete().then(()=>{
                     UIkit.notification({message: `<span uk-icon='icon: trash'></span> Examen eliminado éxitosamente.`, pos: 'top-center', status: 'primary'})
@@ -172,13 +179,13 @@ const printEvaluaciones = async() => {
                 }, function () {
                     UIkit.notification({message: "<span uk-icon='icon: warning'></span> Operación cancelada.", pos: 'top-center', status: 'danger'})
                 })
-            }} uk-icon="icon: trash" ></a>
+            }}><span uk-icon="icon: trash" ></span></button>
 
         </td>
         <td>{item.nombre}</td>
         <td id="noPrint"><span class="{item.corregido?'uk-label':'uk-label uk-label-danger'} ">{item.corregido?'Si':'No'}</span></td>
         <td>{item.nota}</td>
-        <td id="noPrint"><a uk-icon="icon: search" on:click={()=> itemId = item.id }></a></td>
+        <td id="noPrint"><button class="uk-button uk-button-text" on:click={()=> itemId = item.id }><span uk-icon="icon: search"></span> </button></td>
     </tr>
 {/each}
     </tbody>
@@ -200,21 +207,31 @@ const printEvaluaciones = async() => {
 </div>
 
     <ul class="uk-iconnav uk-margin-small-bottom">
-        <li><button class="uk-button" on:click={() => printEvaluacion(data.nombre,data.dni,data.nota,data.preguntas,data.respuestas) }><span uk-icon="icon: print"></span></button>
+        <li><button class="uk-button uk-button-text" on:click={() => printEvaluacion(data.nombre,data.dni,data.nota,data.preguntas,data.respuestas) }><span uk-icon="icon: print"></span></button>
         </li>
     </ul>
 
 <div class="uk-background-muted uk-padding-small uk-panel">
     <div class="uk-clearfix">
         <div class="uk-float-right">
-           <label><input class="uk-checkbox" type="checkbox" bind:this={corregido} checked={data.corregido} 
-           on:change={async ()=> await ref.update({corregido: corregido.checked}) }
-            > Marcar como Evaluado</label> 
+
         </div>
         <div class="uk-float-left">
             {data.nombre}. DNI:{data.dni}
         </div>
     </div>
+</div>
+
+<div class="uk-background-muted uk-padding-small uk-panel uk-margin-top">
+<div class="uk-child-width-1-2@s uk-child-width-1-2@m" uk-grid>
+    <div>
+        <label><input class="uk-checkbox" type="checkbox" bind:this={corregido} checked={data.corregido} on:change={async ()=> await ref.update({corregido: corregido.checked}) }> Marcar como Evaluado</label> 
+    </div>
+    <div>
+      <span class="uk-float-right" uk-icon="icon: file-edit; ratio: 2"></span>
+      <input class="uk-float-right uk-input uk-form-width-small" min="1" type="number" value={data.nota===0?'':data.nota} bind:this={nota} step="0.5" max="10" placeholder="Nota" on:change={()=> ref.update({nota: Number(nota.value)}) }>
+    </div>
+</div>
 </div>
 
 <span class="uk-text-large">Preguntas</span>
@@ -223,15 +240,12 @@ const printEvaluaciones = async() => {
 {/each}
 
 <div class="uk-clearfix uk-background-muted uk-padding-small uk-margin-top">
-    <div class="uk-float-right">
-        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={false}> Enviado por el alumno </label>
-        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={true}> Mis correcciones </label>
-        <input class="uk-input uk-form-width-small" min="1" type="number" value={data.nota===0?'':data.nota} bind:this={nota} step="0.5" max="10" placeholder="Nota"
-        on:change={()=> ref.update({nota: Number(nota.value)}) }>
-        <span class="uk-float-right" uk-icon="icon: file-edit; ratio: 2"></span>
-    </div>
     <div class="uk-float-left">
         <h3 class="uk-float-left">Respuestas</h3>
+    </div>
+    <div class="uk-float-right">
+        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={false}> Evaluación </label>
+        <label><input class="uk-radio uk-child-width-auto" type="radio" name="radio2" bind:group={scoops} value={true}> Correcciones </label>
     </div>
 </div>
 
