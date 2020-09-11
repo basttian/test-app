@@ -54,7 +54,7 @@ let scoops = false;
 import printJS from 'print-js';
 const printEvaluacion = (nombre,dni,nota,preguntas,respuestas) => {
     let someJSONdata = [{ "nombre":nombre, "dni":dni, "nota":nota, "preguntas":[preguntas], "respuestas":[respuestas]  }];
-    printJS({printable: someJSONdata, properties: [{field:'preguntas', displayName:'Preguntas'},{field:'respuestas', displayName:'Respuestas'}], type: 'json', header: `<h3>Evaluacion de ${nombre}, DNI:${dni}, Nota: ${nota} </h3>` });
+    printJS({printable: someJSONdata, properties: [{field:'preguntas', displayName:'Preguntas'},{field:'respuestas', displayName:'Respuestas'}], type: 'json', header: `<p>Evaluacion de ${nombre}, DNI:${dni}, Nota: ${nota} </p>` });
 }
 
 const printEvaluaciones = async() => {
@@ -73,6 +73,7 @@ const printEvaluaciones = async() => {
         console.log("Error getting document:", error);
     });
 }
+
 
 </script>
 
@@ -130,10 +131,6 @@ const printEvaluaciones = async() => {
 </Doc>
 </div>
 
-
-
-
-
 <div class="uk-container">
 <Collection path={`respuestas`} query={ (ref) => ref.where("idexamen","==",`${id}`)} let:data let:ref log>
 <div class="uk-container uk-margin-top" slot="loading"><div uk-spinner></div></div>
@@ -155,6 +152,7 @@ const printEvaluaciones = async() => {
 <table class="uk-table uk-table-divider uk-table-small" id="printJS-lista">
     <thead>
     <tr id="noPrint">
+        <th>-</th>
         <th>Nombre</th>
         <th>Ev</th>
         <th>Nota</th>
@@ -164,6 +162,19 @@ const printEvaluaciones = async() => {
     <tbody>
 {#each data as item}
     <tr>
+        <td>
+            
+            <a id="noPrint" on:click={() => {
+                    UIkit.modal.confirm(`Esta seguro que desea eliminar el examen de ${item.nombre}`).then(function() {
+                        item.ref.delete().then(()=>{
+                    UIkit.notification({message: `<span uk-icon='icon: trash'></span> Examen eliminado éxitosamente.`, pos: 'top-center', status: 'primary'})
+                        })
+                }, function () {
+                    UIkit.notification({message: "<span uk-icon='icon: warning'></span> Operación cancelada.", pos: 'top-center', status: 'danger'})
+                })
+            }} uk-icon="icon: trash" ></a>
+
+        </td>
         <td>{item.nombre}</td>
         <td id="noPrint"><span class="{item.corregido?'uk-label':'uk-label uk-label-danger'} ">{item.corregido?'Si':'No'}</span></td>
         <td>{item.nota}</td>
@@ -179,7 +190,7 @@ const printEvaluaciones = async() => {
 <div class="uk-width-expand@m">
 
 <Doc path={`respuestas/${itemId}`} let:data let:ref log >
-<div slot="loading"><div uk-spinner></div></div>
+<div slot="loading"><span class="uk-text-italic">Buscando..</span></div>
 <div slot="fallback">
     <div uk-alert>
         <a class="uk-alert-close" uk-close></a>
@@ -187,26 +198,18 @@ const printEvaluaciones = async() => {
         <p><span uk-icon="icon: search" ></span> Debe seleccionar un examen.</p>
     </div>
 </div>
+
+    <ul class="uk-iconnav uk-margin-small-bottom">
+        <li><button class="uk-button" on:click={() => printEvaluacion(data.nombre,data.dni,data.nota,data.preguntas,data.respuestas) }><span uk-icon="icon: print"></span></button>
+        </li>
+    </ul>
+
 <div class="uk-background-muted uk-padding-small uk-panel">
     <div class="uk-clearfix">
         <div class="uk-float-right">
            <label><input class="uk-checkbox" type="checkbox" bind:this={corregido} checked={data.corregido} 
            on:change={async ()=> await ref.update({corregido: corregido.checked}) }
             > Marcar como Evaluado</label> 
- 
-        <ul class="uk-iconnav">
-        <li><button class="uk-button" on:click={() => printEvaluacion(data.nombre,data.dni,data.nota,data.preguntas,data.respuestas) }><span uk-icon="icon: print"></span></button></li>
-        <li><button class="uk-button" on:click={() => {
-                    UIkit.modal.confirm(`Esta seguro que desea eliminar el examen de ${data.nombre}`).then(function() {
-                        ref.delete().then(()=>{
-                    UIkit.notification({message: `<span uk-icon='icon: trash'></span> Examen eliminado éxitosamente.`, pos: 'top-center', status: 'primary'})
-                        })
-                }, function () {
-                    UIkit.notification({message: "<span uk-icon='icon: warning'></span> Operación cancelada.", pos: 'top-center', status: 'danger'})
-                })
-            }}><span uk-icon="icon: trash"></span></button>
-        </li>
-        </ul>
         </div>
         <div class="uk-float-left">
             {data.nombre}. DNI:{data.dni}
@@ -216,9 +219,7 @@ const printEvaluaciones = async() => {
 
 <span class="uk-text-large">Preguntas</span>
 {#each { length:data.preguntas.length } as item,i}
-<div class="uk-column-1-1@s">
-{`${i+1})`} {@html data.preguntas[i]}
-</div>
+    <span class="uk-text-bold">{@html data.preguntas[i]}</span>
 {/each}
 
 <div class="uk-clearfix uk-background-muted uk-padding-small uk-margin-top">
@@ -238,7 +239,7 @@ const printEvaluaciones = async() => {
  {#if scoops} 
 <main>
     <div class="editor" use:quill={options} on:text-change={e => content = e.detail} >
-        {@html data.correcciones}
+        {@html data.correcciones}   
     </div>
 </main>
 {:else}
@@ -249,9 +250,7 @@ const printEvaluaciones = async() => {
 </main> 
 {/if}
 
-
-
-    <div class="uk-background-muted uk-padding-small uk-panel">
+    <div class="uk-background-muted uk-padding-small uk-panel uk-margin-small-top">
         <button class="uk-button uk-button-text"
         on:click={()=> ref.update({correcciones:content.html})
         .then(resp=>{UIkit.notification("<span uk-icon='icon: check'></span> Correcciones enviadas exitosamente")}) }

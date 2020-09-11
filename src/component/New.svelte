@@ -104,7 +104,7 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
 <nav class="uk-navbar-transparent" uk-navbar>
     <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
-            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2"></span></Link></li>
+            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
         </ul>
     </div>
     <div class="uk-navbar-right">
@@ -227,8 +227,10 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
         </div>
     {/each}
 
-    <button class="uk-button uk-button-default uk-margin-top" on:click={add}>Agregar nueva pregunta</button>
-    <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>Quitar pregunta seleccionada</button>
+    <button class="uk-button uk-button-default uk-margin-top" on:click={add} uk-tooltip="Agregar nueva pregunta">
+    <span uk-icon="icon: plus"></span></button>
+    <button class="uk-button uk-button-default uk-margin-top" on:click={clear} uk-tooltip="Quitar pregunta seleccionada">
+    <span uk-icon="icon: minus"></span></button>
 
         <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
         disabled={!remaining>=1 || Math.floor(Number(d(_i,_f)))<=0 || titulo.length<8 || descripcion.length<8 }

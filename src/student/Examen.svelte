@@ -266,7 +266,7 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
 <h1 class="uk-article-title">{data.titulo}</h1>
 <p class="uk-article-meta">{moment().format('dddd')} {moment().format('Do [de] MMMM [del] YYYY, h:mm:ss a')}</p>
 {#each { length:data.preguntas.length } as item,i}
-     <p class="uk-text-bold">{`${i+1})`} {@html data.preguntas[i]}</p>
+     <p class="uk-text-bold">{@html data.preguntas[i]}</p>
 {/each}
 
 </article>

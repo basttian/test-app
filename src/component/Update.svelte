@@ -193,14 +193,17 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
         <!-- preguntas -->
          <div class="uk-width-1-1 uk-margin-top">
             <div class="uk-placeholder">
-              {#each { length:data.preguntas.length } as p,i}
                 <div>
-               <span class="uk-label uk-label-danger">
-               <a class="uk-text-middle" href="javascript:void(0)" uk-icon="icon: close" on:click={()=> DeleteArrayPreguntas(data.preguntas[i]) } ></a>
-               </span>
-               <span class="uk-margin-right">{@html data.preguntas[i]}</span>
+                    <ul class="uk-list uk-list-divider">
+                        {#each { length:data.preguntas.length } as p,i}
+                         <li>
+                           <button class="uk-button uk-button-danger uk-button-small" on:click={()=> DeleteArrayPreguntas(data.preguntas[i]) }><span uk-icon="icon: close"></span>
+                           </button>
+                           <span class="uk-text-middle">{ @html data.preguntas[i] }</span>
+                        </li>
+                        {/each}
+                    </ul>
                 </div>
-              {/each}
             </div>          
         </div>
         <div class="uk-grid-small" uk-grid>
