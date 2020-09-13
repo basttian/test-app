@@ -105,24 +105,22 @@ document.onkeydown = function(){
     }
 }
 
+// Carbon icons
+import Education24 from "carbon-icons-svelte/lib/Education24";
+import ToolBox24 from "carbon-icons-svelte/lib/ToolBox24";
+import WatsonHealthNominate24 from "carbon-icons-svelte/lib/WatsonHealthNominate24";
 
 </script>
 
 <svelte:head>
 <title>Iniciar sesión</title>
-
 <style>
     body{
         background-color:rgb(255, 255, 255);
         overscroll-behavior: none;
         }
 </style>
-
-
 </svelte:head>
-
-
-
 
 <FirebaseApp {firebase}>
 	<User let:user={user} let:auth={auth} >
@@ -138,29 +136,19 @@ document.onkeydown = function(){
         </div>
     </div>
     <div class="uk-navbar-right uk-margin-right">
-         
-
     <span uk-icon="icon: grid"></span>
     <div uk-dropdown="animation: uk-animation-slide-top-small; duration: 500" id="drop">
- 
     <ul class="uk-nav uk-dropdown-nav uk-nav-primary uk-margin-auto-vertical">
-        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/">Página principal</Link></li>
-        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('view')}"><span uk-icon="icon: folder"></span> Examenes</Link></li>
-        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('new')}"><span uk-icon="icon: file-edit"></span> Nuevo examen</Link></li>
-        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('evaluaciones')}"><span uk-icon="icon: file-text"></span> Mis evaluaciones</Link></li>
+        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/"><WatsonHealthNominate24 /> Inicio</Link></li>
+        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('view')}"><ToolBox24 /> Mis examenes</Link></li>
+        <li><Link on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('evaluaciones')}"><Education24 /> Mis evaluaciones</Link></li>
         <li class="uk-nav-divider"></li>
         <li><a href="javascript:void(0);" on:click={()=>{Salir(auth)}} ><span uk-icon="icon: sign-out"></span> Salir</a></li>
     </ul>
-  
     </div>
-    <!-- <button uk-tooltip="title: Salir; pos: bottom" on:click={()=>{Salir(auth)}} uk-icon="sign-out"></button> -->
-
-
     </div>
 </nav>
  </div>
-
-
 
 <main uk-height-viewport="expand: true">
   <Router>
@@ -178,13 +166,9 @@ document.onkeydown = function(){
     <div class="uk-background-default uk-padding uk-panel">
   </footer>
 
-
-
 <!-- Btn Ingreso Google  -->
 <div  slot="signed-out">
-
 <span class="uk-text-meta uk-margin uk-padding-small">Debes iniciar sesión antes de comenzar.</span>
-
 <main uk-height-viewport="expand: true">
 <div class="uk-child-width-1-3@m" uk-grid uk-scrollspy="cls: uk-animation-fade; target: .uk-card; delay: 500; repeat: true">
 <div class="uk-position-small uk-position-center uk-overlay uk-overlay-default">

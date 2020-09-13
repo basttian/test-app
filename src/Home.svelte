@@ -130,11 +130,10 @@
 <User let:user={user} let:auth={auth} on:user>
 <div class="uk-container uk-margin-bottom">
 <h1 class="uk-text-center uk-text-capitalize uk-margin-top">{_date} {hours}:{minutes<=9?"0"+minutes:minutes}:{seconds<=9?"0"+seconds:seconds}</h1>
-	<p>Hola!! {user.displayName}, coloca el código de examen que te dio tu profesor.</p>
 	<div class="uk-alert-primary" uk-alert>
 		<button class="uk-alert-close" uk-close></button>
-		<p><span uk-icon="info"></span> Información !! Al ingresar el tiempo <span uk-icon="icon: future"></span> comenzará a correr.</p>
-		<span class="uk-text-meta">Solo tendrás una oportunidad, aprovéchala. Suerte!!</span>
+		<span class="uk-text-muted">Hola!! {user.displayName}, si cuentas con el código ingresalo en la casilla de abajo.</span>
+		<p><span uk-icon="info"></span> Información !! Al ingresar al examen el tiempo comenzará a correr.</p>
 	</div>
 
 	<div class="uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>
@@ -160,7 +159,6 @@
 	</div>
 	</div>
 
-
 	{#await promise}
         <div class="uk-position-cover uk-overlay 
                     uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
@@ -169,8 +167,6 @@
     {/await}
 
 </div>
-
-
 
 <div class="uk-section uk-section-muted">
     <div class="uk-container-expand">
@@ -182,7 +178,7 @@
 		{#if data.length === 0}
 			<div class="uk-container uk-margin-top">
 				<div class="uk-alert-uk-alert-primary" uk-alert>
-					<p><span uk-icon="icon: info"></span> Nada que mostrar.</p>
+					<p><span uk-icon="icon: info"></span> No hay examenes programados.</p>
 				</div>
 			</div>
 		{:else}	
