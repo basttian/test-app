@@ -12,7 +12,7 @@ const delExamen = async(id) =>{
             UIkit.notification({
                 message: '<span uk-icon="icon: trash"></span> Examen eliminado correctamente.',
                 status: 'danger',
-                pos: 'top-center',
+                pos: 'bottom-center',
                 timeout: 1500
             });
             console.log("Document successfully deleted!");
@@ -24,7 +24,7 @@ const delExamen = async(id) =>{
             UIkit.notification({
                 message: '<span uk-icon="icon: check"></span> Cancelado.',
                 status: 'primary',
-                pos: 'top-center',
+                pos: 'bottom-center',
                 timeout: 1500
             });
         console.log('Rejected.')
@@ -52,8 +52,7 @@ const copyTextToClipboard = (v) => {
         document.body.removeChild(temp);
         UIkit.notification({
             message: "<span uk-icon='icon: check'></span> Copiado!",
-            status: 'primary',
-            pos: 'top-center',
+            pos: 'bottom-center',
             timeout: 1000
         });
         }
@@ -130,13 +129,16 @@ const copyTextToClipboard = (v) => {
     {/each}
 </div>
 {/if}
-
 <!-- Si hay un error -->
 <div slot="fallback">
     Unable to display data...
 </div>
-
 </Collection>
+
+<!-- Boton mis examenes -->
+<span class="btn-flotante uk-margin uk-background-muted"> 
+<Link class="uk-link-reset" on:click={()=> UIkit.dropdown("#drop").hide()} href="/{sha512('new')}"><span uk-icon="icon: plus"></span> Nuevo examen</Link>
+</span>
 </User>
 </FirebaseApp>
 </div>

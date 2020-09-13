@@ -6,9 +6,6 @@ import moment from 'moment';
 import 'moment/locale/es';
 import { Router, Route, Link } from 'yrv';
 
-
-
-
     function add() {
         preguntas = preguntas.concat({ done: false, text: '' });
 	}
@@ -81,7 +78,7 @@ let arr = [];
         }).then(function(i) {
             cod = i.id;
             UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen creado con éxito.", 
-            pos: 'top-center', 
+            pos: 'bottom-center', 
             status: 'primary',
             timeout: 1000 
             });
@@ -90,9 +87,6 @@ let arr = [];
         }) 
     }
 
-
-/* Carbon Icons */
-import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
 
 </script>
     <svelte:head>
@@ -108,7 +102,7 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
         </ul>
     </div>
     <div class="uk-navbar-right">
-        <span class="uk-margin-right"><FolderAdd32 /></span>
+        
     </div>
 </nav>
 
@@ -227,14 +221,14 @@ import FolderAdd32 from "carbon-icons-svelte/lib/FolderAdd32";
         </div>
     {/each}
 
-    <button class="uk-button uk-button-default uk-margin-top" on:click={add} uk-tooltip="Agregar nueva pregunta">
+    <button class="uk-button uk-button-default uk-margin-top" on:click={add}>
     <span uk-icon="icon: plus"></span></button>
-    <button class="uk-button uk-button-default uk-margin-top" on:click={clear} uk-tooltip="Quitar pregunta seleccionada">
+    <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>
     <span uk-icon="icon: minus"></span></button>
 
         <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
         disabled={!remaining>=1 || Math.floor(Number(d(_i,_f)))<=0 || titulo.length<8 || descripcion.length<8 }
-        on:click={()=> AddData(user.uid) }
+        on:click|once={()=> AddData(user.uid) }
         >Crear nuevo examen
         </button>
     </fieldset>
