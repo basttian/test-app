@@ -44,7 +44,7 @@
         </div>
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
-             
+             <span class="uk-text-uppercase uk-margin-right">Mis evaluaciones</span>
             </ul>
         </div>
 </nav>
@@ -54,6 +54,9 @@
 <div class="uk-container">
 <Collection path={`respuestas`} query={ (ref) => ref.where("uid","==",`${user.uid}`)} let:data let:ref log>
 <div slot="loading"><div uk-spinner></div></div>
+<div slot="fallback">
+    Unable to display ...
+</div>
 {#if data.length === 0}
     <div class="uk-container uk-margin-top">
         <div class="uk-alert-uk-alert-primary" uk-alert>
@@ -65,33 +68,53 @@
 
 <div class="uk-grid-divider uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>
 <div class="uk-width-auto@m">
-<span class="uk-text-uppercase">Evaluaciones realizadas </span>
- <ul class="uk-list uk-list-striped">
+
+
+<div uk-filter="target: .js-filter">
+    <ul class="uk-subnav uk-subnav-pill">
+        <li uk-filter-control="sort: data-date"><a uk-icon="icon: triangle-up"></a></li>
+        <li uk-filter-control="sort: data-date; order: desc"><a uk-icon="icon: triangle-down"></a></li>
+    </ul>
+
+<ul class="js-filter uk-list uk-list-striped">
 {#each data as item} 
-    <li>
+    <li data-date={item.fecha}>
+    <a href="javascript:void(0)" on:click={()=> {
+
+        UIkit.modal.confirm('<em>¿Eliminar este examen?</em><br>Si realizas esta acción, se eliminarán de forma permanente los datos.').then(function() {
+            item.ref.delete();
+        }, function () {
+            console.log('Rejected.')
+        })
+
+    }} uk-icon="icon: trash"> </a>
     <span class="{item.nota <= 6?'uk-label uk-label-danger':'uk-label uk-label-success'} ">{item.nota}</span>
     <span class="{item.corregido?'uk-label':'uk-label uk-label-danger'} ">{item.corregido?'Si':'No'}</span>
-    {moment(item.fecha).format("LLLL")}  <a uk-icon="icon: search" on:click={() =>  idExamen={idex:`${item.idexamen}`,idDoc:`${item.id}`}  }></a></li>
+    {moment(item.fecha).format("lll")}  <a uk-icon="icon: search" on:click={() =>  idExamen={idex:`${item.idexamen}`,idDoc:`${item.id}`}  }></a></li>
 {/each}
 </ul>
+</div>
+
+
 
 </div>
     <div class="uk-width-expand@m">
     <Doc path={`examenes/${idExamen.idex}`} let:data let:ref log>
     <div slot="loading"><div uk-spinner></div></div>
-
     <h4 class="uk-heading-divider">{data.titulo} - {data.descripcion}</h4>
 
     <div slot="fallback">
         <div uk-alert>
             <a class="uk-alert-close" uk-close></a>
-            <h3>Información</h3>
-            <p>Datos no disponibles.</p>
+            <p>Nada para mostar.</p>
         </div>
     </div>
    
     <Doc path={`respuestas/${idExamen.idDoc}`} let:data let:ref log>
     <div slot="loading"><div uk-spinner></div></div>
+    <div slot="fallback">
+        Doc unable to display...
+    </div>
         <div class="uk-background-muted uk-padding-small uk-panel uk-margin-bottom">
             <p class="uk-h4">{data.nota===0?'Aun no tiene nota.': `Calificación: ${data.nota}`}</p>
         </div>
@@ -123,14 +146,11 @@
             {/if}
         </div>
     </div>
-    </Doc> </Doc>
+    </Doc> 
+    </Doc>
     </div>
 </div>
 {/if}
-<p></p>
-<div slot="fallback">
-    Unable to display ...
-</div>
 </Collection>
 </div>
 </User>
