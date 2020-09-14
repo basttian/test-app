@@ -74,7 +74,7 @@
 
 	const Salir = (user) =>{
 	    //console.log(user)
-	    UIkit.modal.confirm('Esta seguro que desea salir de la aplicación...').then(function() {
+	    UIkit.modal.confirm('Cerrar sesión.').then(function() {
 	    //console.log('Confirmed.')
 	    user.signOut().then(resp => {
 	    UIkit.notification({
