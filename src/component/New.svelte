@@ -95,16 +95,22 @@ let arr = [];
     </svelte:head>
     <!-- Body -->
 
-<nav class="uk-navbar-transparent" uk-navbar>
+<div class="uk-preserve-color">
+<div uk-sticky="offset: 0; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 0">
+<nav class="uk-navbar-container" uk-navbar>
     <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
             <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
         </ul>
     </div>
     <div class="uk-navbar-right">
-        
+        <ul class="uk-navbar-nav">
+             
+        </ul>
     </div>
 </nav>
+</div>
+</div>
 
 
 <div class="uk-container">
