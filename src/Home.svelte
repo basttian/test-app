@@ -158,7 +158,6 @@
     <div>
 	</div>
 	</div>
-
 	{#await promise}
         <div class="uk-position-cover uk-overlay 
                     uk-overlay-default uk-flex uk-flex-center uk-flex-middle">

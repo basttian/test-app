@@ -12,15 +12,17 @@
     // Prop
     export let examenid;
     export let parauser;
+    let promise;
 
     /* Variable mensaje */
     let mssje = '';
+    $: l = mssje.length;
 
     const sendmsj = async (msj,usuarioid,usuarionombre,urlphoto) =>{
     if(msj==''){
         console.log("El mensaje no pudo ser enviado.")
     }else{
-        await db.collection(`coments`).add({
+        promise = db.collection(`coments`).add({
             leido:false,
             entregado:false,
             create_at:moment().valueOf(),
@@ -50,10 +52,14 @@
     <form on:submit|preventDefault={()=>{sendmsj(mssje, user.uid, user.displayName, user.photoURL)}}>
         <div class="uk-margin">
             <div class="uk-inline">
-                <a class="uk-form-icon uk-form-icon-flip" on:click={()=>{sendmsj(mssje, user.uid, user.displayName, user.photoURL)}} href="javascript:void(0)" uk-icon="icon: commenting"></a>
+                <a class="uk-form-icon uk-form-icon-flip {l > 60 ? 'uk-disabled uk-text-danger' : '' }" on:click={()=>{sendmsj(mssje, user.uid, user.displayName, user.photoURL)}} href="javascript:void(0)" uk-icon="icon: commenting"></a>
                 <input class="uk-input uk-form-width-large" type="text" placeholder="Descargo." bind:value={mssje}>
-                </div>
+            </div>
+            {#await promise }
+                <div uk-spinner></div>
+            {/await}
         </div>
+        <span class="uk-text-muted uk-float-left">{l} carácteres | {l>60?'Sobrepaso los 60 carácteres.':'No sobrepasar los 60 carácteres.'}</span>
     </form>
 
     <Collection path={`coments`} query={ref=> ref.where("deuserid","==",`${user.uid}`).where("examenid","==",`${examenid}`) } let:data let:ref >

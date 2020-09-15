@@ -5,10 +5,11 @@ const db = firebase.firestore();
 import { Router, Route, Link } from 'yrv';
 import sha512 from 'crypto-js/sha512';
 
+let promise;
 
 const delExamen = async(id) =>{
-    UIkit.modal.confirm('Si acepta, se eliminarán permanentemente los datos en esta ruta de recopilación, incluidos todos los documentos y colecciones anidados.!').then(async function() {
-        await db.collection("examenes").doc(`${id}`).delete().then( async function() {
+    UIkit.modal.confirm('Si acepta, se eliminarán permanentemente los datos de este examen, incluidos todos los documentos, mensajes, notas e ingresos anidados a el.!').then(async function() {
+      promise = db.collection("examenes").doc(`${id}`).delete().then( async function() {
         await db.collection('ingresos').where("codigodeExamen","==", `${id}`).get()
             .then(function(querySnapshot){
                 querySnapshot.forEach(function(doc) {
@@ -109,7 +110,7 @@ const copyTextToClipboard = (v) => {
         </div>
     </div>
 {:else}
-<div class="uk-child-width-1-1@s uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid>
+<div class="uk-child-width-1-1@s uk-child-width-1-2@m uk-grid-small uk-grid-match" uk-grid uk-scrollspy="cls: uk-animation-slide-bottom; target: .uk-card; delay: 300; repeat: false">
     {#each data as item}
     <div>
         <div class="uk-card uk-card-primary uk-card-hover uk-card-body">
@@ -144,7 +145,15 @@ const copyTextToClipboard = (v) => {
                 </div>
             </div>
         </div>
-    </div>
+  
+        {#await promise}
+            <div class="uk-position-cover uk-overlay 
+                        uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
+                <div uk-spinner="ratio: 3"></div>
+            </div> 
+        {/await}
+
+      </div>
     {/each}
 </div>
 {/if}
@@ -161,3 +170,4 @@ const copyTextToClipboard = (v) => {
 </User>
 </FirebaseApp>
 </div>
+

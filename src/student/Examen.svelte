@@ -60,6 +60,7 @@ let promise;
     /* Data */
     let estudiante = '';
     let dni = '';
+    $: l = dni.length;
     let disablebtn = false;
  /* buscamos duplicados  */
  let handlerSecond = 1;//creo la variable que me permitira detenere el tiempo si el estudiante presiono el boton de envio.
@@ -93,7 +94,7 @@ const sendDataResponse = async(dni,estudiante,respuesta, useruid) => {
             //console.log(resp);
             UIkit.notification({
                 message:"<span uk-icon='icon: check'></span> Examen enviado éxitosamente.",
-                pos: "top-center",
+                pos: "bottom-center",
                 status: "primary"
                 });
         }).catch(error=>{
@@ -236,7 +237,9 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
     <span uk-icon="icon: clock"></span> Tienes {moment.duration(data.finaliza - data.inicia).asMinutes()} minutos.</p>
 </div>
 <!-- Formulario  -->
+<form on:submit|preventDefault={()=>sendDataResponse(Number(dni),estudiante,content.html,user.uid)}>
 <div class="uk-background-muted uk-margin">
+    
     <div  class="uk-grid-small" uk-grid>
     <div class="uk-width-1-2@s">
         <input class="uk-input uk-disabled" 
@@ -246,7 +249,8 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
         placeholder="Nombre y apellido" disabled={true}>
     </div>
     <div class="uk-width-1-2@s">
-        <input class="uk-input" bind:value={dni} type="text" placeholder="DNI">
+        <input class="uk-input" bind:value={dni} type="text" placeholder="DNI" pattern="[0-9]*" inputmode="numeric">
+        <span class="uk-text-meta uk-float-right">{l} | {l == 8?"DNI Válido":"DNI Inválido."}</span>
     </div>
     </div>
 </div>
@@ -263,10 +267,14 @@ let:data let:ref log on:data={(e) =>  e.detail.data[0] === void 0 ? 0 : uidingre
 <div class="editor" use:quill={options} on:text-change={e => content = e.detail}></div>
 <!-- {@html content.html} -->
 <button class="uk-button uk-button-primary uk-margin" 
-disabled={Number(content.text.length)<=3 || disablebtn || !dni || !estudiante}
-on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
->Enviar respuesta</button>
+disabled={Number(content.text.length)<=3 || disablebtn || Number(l)!=8 || !estudiante} >Enviar respuesta</button>
 
+{#await promise}
+        <div uk-spinner></div>
+{/await}
+
+
+</form>
 <p><span class="uk-label uk-label-warning">Nota</span> Asegúrate de colocar tu DNI antes de enviar el examen.</p>
 
 <!-- Si no se encuentra -->
@@ -286,8 +294,4 @@ on:click={() => sendDataResponse(Number(dni),estudiante,content.html,user.uid)}
 </User>
 </FirebaseApp>
 
-{#await promise}
-    <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
-        <div uk-spinner="ratio: 3"></div>
-    </div> 
-{/await}
+

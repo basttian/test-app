@@ -14,7 +14,7 @@
         id = router.params ? router.params.id : null;
     }
 
-    
+    let promise;
     let devolucion= [];
 
 </script>
@@ -23,7 +23,7 @@
 <User let:user={user} let:auth={auth} >
 
 
-<Collection path={`coments`} query={ref=>ref.where("para", "==", `${user.uid}` ).where("leido", "==", false) } let:data let:ref> <!-- .where("leido", "==", false ) -->
+<Collection path={`coments`} query={ref=>ref.where("para", "==", `${user.uid}` ).where("leido", "==", false) } let:data let:ref> 
 <div slot="loading"><div uk-spinner></div></div>
  <div slot="fallback">
     Unable to display ...
@@ -62,7 +62,7 @@
             </div>
         <footer>
             <div class="uk-margin-top">
-                <input class="uk-input uk-placeholder" type="text" value={doc.devolucion} bind:this={devolucion[i]} placeholder="Devolución">
+                <input class="uk-input uk-placeholder" type="text" value={doc.devolucion} bind:this={devolucion[i]}  placeholder="Devolución">
                 {#if doc.entregado}
                     <span class="uk-label uk-label-success"><span uk-icon="check"></span><span uk-icon="check"></span></span>
                 {:else}
@@ -71,12 +71,12 @@
                 
 
                 <a class="uk-margin-small-left uk-float-right" href="javascript:void(0)" uk-icon="icon: trash" 
-                on:click={async () => await doc.ref.update({ 
+                on:click={async () => promise = doc.ref.update({ 
                     leido:true
                 }) } > </a>
 
                 <button class="uk-button uk-button-text uk-float-right" 
-                            on:click={async ()=> await doc.ref.update({
+                            on:click={async ()=> promise = doc.ref.update({
                                 create_at:doc.create_at,
                                 examenid:doc.examenid,
                                 mensaje: doc.mensaje,
@@ -96,12 +96,15 @@
 
             </div>
         </footer>    
+        <div class="uk-position-center">
+            {#await promise }
+              <div uk-spinner="ratio: 3"></div>
+            {/await}
+        </div>
 </article>
  {/each}
  {/if}
 </Collection>
- <!-- doc.ref.delete() -->
-
 </User>
 </FirebaseApp>
 </div>
