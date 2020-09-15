@@ -110,6 +110,10 @@ import Education24 from "carbon-icons-svelte/lib/Education24";
 import ToolBox24 from "carbon-icons-svelte/lib/ToolBox24";
 import WatsonHealthNominate24 from "carbon-icons-svelte/lib/WatsonHealthNominate24";
 
+// Modulo
+import msj from "./modules/Mensajesfront.svelte";
+import MSJ from "./modules/Mensajesnav.svelte";
+
 </script>
 
 <svelte:head>
@@ -136,6 +140,8 @@ import WatsonHealthNominate24 from "carbon-icons-svelte/lib/WatsonHealthNominate
         </div>
     </div>
     <div class="uk-navbar-right uk-margin-right">
+	  <!-- module msj -->
+      <MSJ/>
     <span uk-icon="icon: grid"></span>
     <div uk-dropdown="animation: uk-animation-slide-top-small; duration: 500" id="drop">
     <ul class="uk-nav uk-dropdown-nav uk-nav-primary uk-margin-auto-vertical">
@@ -160,6 +166,8 @@ import WatsonHealthNominate24 from "carbon-icons-svelte/lib/WatsonHealthNominate
       <Route path="/{sha512('respuestas')}/:id" exact component={respuestas} />
       <Route path="/{sha512('ingresos')}/:id" exact component={ingresos} />
        <Route path="/{sha512('evaluaciones')}" exact component={evaluaciones} />
+	    <!-- module msj -->
+       <Route path="/{sha512('mensajes')}/:id" exact component={msj} />
   </Router> 
 </main>
   <footer>

@@ -7,15 +7,33 @@ import sha512 from 'crypto-js/sha512';
 
 
 const delExamen = async(id) =>{
-     await UIkit.modal.confirm('Esta seguro que desea eliminar el examen!').then(function() {
-        db.collection("examenes").doc(`${id}`).delete().then(function() {
-            UIkit.notification({
+    UIkit.modal.confirm('Si acepta, se eliminarán permanentemente los datos en esta ruta de recopilación, incluidos todos los documentos y colecciones anidados.!').then(async function() {
+        await db.collection("examenes").doc(`${id}`).delete().then( async function() {
+        await db.collection('ingresos').where("codigodeExamen","==", `${id}`).get()
+            .then(function(querySnapshot){
+                querySnapshot.forEach(function(doc) {
+                  db.collection("ingresos").doc(`${doc.id}`).delete();
+                });
+            });
+        await db.collection('respuestas').where("idexamen","==", `${id}`).get()
+            .then(function(querySnapshot){
+                querySnapshot.forEach(function(doc) {
+                  db.collection("respuestas").doc(`${doc.id}`).delete();
+                });
+            });
+        await db.collection('coments').where("examenid","==", `${id}`).get()
+            .then(function(querySnapshot){
+                querySnapshot.forEach(function(doc) {
+                  db.collection("coments").doc(`${doc.id}`).delete();
+                });
+            });
+        UIkit.notification({
                 message: '<span uk-icon="icon: trash"></span> Examen eliminado correctamente.',
                 status: 'danger',
                 pos: 'bottom-center',
                 timeout: 1500
-            });
-            console.log("Document successfully deleted!");
+            }); 
+            console.log("Documents successfully deleted!");
         }).catch(function(error) {
             console.error("Error removing document: ", error);
         });
@@ -30,6 +48,7 @@ const delExamen = async(id) =>{
         console.log('Rejected.')
     })
 }
+
 
 
 const copyTextToClipboard = (v) => {

@@ -24,6 +24,9 @@
     import sha512 from 'crypto-js/sha512';
     let idExamen=[{idex:'',idDoc:''}];
 
+    // Modulo
+    import MSJBACK from "../modules/Mensajesback.svelte";
+
 </script>
 
     <svelte:head>
@@ -99,9 +102,9 @@
 
 </div>
     <div class="uk-width-expand@m">
-    <Doc path={`examenes/${idExamen.idex}`} let:data let:ref log>
+    <Doc path={`examenes/${idExamen.idex}`} let:data={values} let:ref log>
     <div slot="loading"><div uk-spinner></div></div>
-    <h4 class="uk-heading-divider">{data.titulo} - {data.descripcion}</h4>
+    <h4 class="uk-heading-divider">{values.titulo} - {values.descripcion}</h4>
 
     <div slot="fallback">
         <div uk-alert>
@@ -146,6 +149,10 @@
             {/if}
         </div>
     </div>
+
+        <!-- Mensaje al profesor -->
+        <MSJBACK examenid={data.idexamen} parauser={values.uid}/>
+
     </Doc> 
     </Doc>
     </div>
