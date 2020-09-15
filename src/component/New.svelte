@@ -59,13 +59,13 @@ $: d = (i,f) => { return  moment.duration(moment.utc(moment(f).diff(moment(i))))
 let preguntas = [];
 let cod = '[Esperando codigo de examen..]';
 let arr = [];
-
+let promise;
   const AddData = async (idusuario) => {
          arr = [];
             preguntas.forEach(function(element, index ) {
                 arr.push(content[index].html);/* element.text */
             });
-        await db.collection(`examenes`).add({
+    promise = db.collection(`examenes`).add({
           descripcion: descripcion,
           duracion: _f - _i,
           finaliza:moment(_f).valueOf(),
@@ -232,11 +232,24 @@ let arr = [];
     <button class="uk-button uk-button-default uk-margin-top" on:click={clear}>
     <span uk-icon="icon: minus"></span></button>
 
-        <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
+
+<div uk-grid>
+    <div>
+        <div class="uk-inline">
+        <button class="uk-button uk-button-primary uk-margin-top uk-button-large" 
         disabled={!remaining>=1 || Math.floor(Number(d(_i,_f)))<=0 || titulo.length<8 || descripcion.length<8 }
         on:click|once={()=> AddData(user.uid) }
-        >Crear nuevo examen
-        </button>
+        >Crear nuevo examen</button> 
+        {#await promise}
+            <div uk-spinner></div>
+        {/await}
+    </div>
+</div>
+
+  
+
+
+
     </fieldset>
     <!-- info -->
     <p><span uk-icon="info"></span> El código lo obtendra una vez que termine de crear el examen.</p>

@@ -82,9 +82,6 @@ let status = false;
 
     })
 
-/* Carbon Icons */
-import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
-
 </script>
     <svelte:head>
         <title>Crear Examenes</title>
@@ -92,17 +89,23 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
     </svelte:head>
 
     <!-- Body -->
-
-<nav class="uk-navbar-transparent" uk-navbar>
+<div class="uk-preserve-color">
+<div uk-sticky="offset: 0; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 0">
+<nav class="uk-navbar-container" uk-navbar>
     <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
-            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2"></span></Link></li>
+            <li class="uk-active"><Link go="back" ><span class="uk-margin-small-right" uk-icon="icon:  arrow-left; ratio: 2" uk-tooltip="title: Atras; pos: right"></span></Link></li>
         </ul>
     </div>
     <div class="uk-navbar-right">
-        <span class="uk-margin-right"><FolderDetails32 /></span>
+        <span class="uk-margin-right">
+            Modificar Examen
+        </span>
     </div>
 </nav>
+</div>
+</div>
+
 
 <div class="uk-container uk-margin-top">
 
@@ -127,7 +130,7 @@ import FolderDetails32 from "carbon-icons-svelte/lib/FolderDetails32";
 
 
 <fieldset class="uk-fieldset uk-margin-top">
-         <legend class="uk-legend">Modificar Examen </legend>
+         <legend class="uk-legend"></legend>
         <div class="uk-grid-small" uk-grid>
 
        
