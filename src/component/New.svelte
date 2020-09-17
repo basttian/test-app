@@ -104,9 +104,9 @@ let promise;
         </ul>
     </div>
     <div class="uk-navbar-right">
-        <ul class="uk-navbar-nav">
-             
-        </ul>
+        <span class="uk-margin-right uk-text-uppercase">
+             Crear nuevo examen
+        </span>
     </div>
 </nav>
 </div>
@@ -128,7 +128,6 @@ let promise;
         </div>
     </div> 
 </div>
-<h3 class="uk-heading-line uk-text-center"><span>Crear nuevo Examen</span></h3>
     <fieldset class="uk-fieldset uk-margin-top">
         <legend class="uk-legend"></legend>
         <div class="uk-grid-small" uk-grid>

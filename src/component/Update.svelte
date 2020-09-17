@@ -51,7 +51,7 @@ let status = false;
     /* Agregar elementos al arreglo preguntas */
     const AgregarArrayPregunta = async()=>{
         if(content.text.length > 2){
-            await db.collection(`examenes`).doc(`${id}`).update({
+            promiseUpdate = db.collection(`examenes`).doc(`${id}`).update({
                 "preguntas": firebase.firestore.FieldValue.arrayUnion(`${content.html}`)
             }).then(()=>{
                 console.log("update")
@@ -82,6 +82,10 @@ let status = false;
 
     })
 
+let promise;
+let promiseUpdate;
+
+
 </script>
     <svelte:head>
         <title>Crear Examenes</title>
@@ -98,8 +102,8 @@ let status = false;
         </ul>
     </div>
     <div class="uk-navbar-right">
-        <span class="uk-margin-right">
-            Modificar Examen
+        <span class="uk-margin-right uk-text-uppercase">
+            Modificar examen
         </span>
     </div>
 </nav>
@@ -189,6 +193,37 @@ let status = false;
         </div>
         {/if}
 
+
+        <div class="uk-margin-small-top">
+            <button class="uk-button uk-button-default uk-button-large uk-width-1-1 uk-margin-top" 
+                      disabled={!Number(data.preguntas.length)>=1 || Number(_fin) <= Number(_inicio) }
+                on:click={async ()=> { 
+                promise = ref.update({ 
+                        status:status.checked, 
+                        titulo:titulo.value, 
+                        descripcion:descripcion.value, 
+                        inicia: moment(_inicio).valueOf(), 
+                        finaliza: moment(_fin).valueOf(),
+                        duracion: _fin - _inicio,
+                        uid: user.uid
+                }).then(()=>{
+                        UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Tiempo del examen actualizado con éxito.", 
+                        pos: 'top-center', 
+                        status: 'primary',
+                        timeout: 1000 
+                        })
+                })}}>Actualizar tiempo del examen
+
+        {#await promise}
+            <div uk-spinner></div>
+        {/await}
+
+            </button>
+        </div>
+
+
+
+
         </div>
 
         <legend class="uk-legend uk-margin-top uk-margin-bottom">Preguntas del examen ({remaining + Number(data.preguntas.length)}) </legend>
@@ -209,6 +244,7 @@ let status = false;
                 </div>
             </div>          
         </div>
+    <div class="uk-placeholder">
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1 uk-margin-top">
                 <!-- <textarea class="uk-textarea" bind:value={text} 
@@ -216,31 +252,22 @@ let status = false;
                 placeholder="Nueva pregunta."></textarea> -->
 
                 <div class="uk-padding-small">
-                <div class="editor" use:quill={options} on:text-change={e => content = e.detail} ></div>
+                <div class="editor uk-width-1-1" use:quill={options} on:text-change={e => content = e.detail} ></div>
                 </div>
             </div>
         </div>
   
-        <button class="uk-button uk-button-default uk-width-1-1 uk-margin-top" 
-        disabled={!Number(data.preguntas.length)>=1 || Number(_fin) <= Number(_inicio) }
-        on:click={()=> { 
-        AgregarArrayPregunta();
-        ref.update({ 
-            status:status.checked, 
-            titulo:titulo.value, 
-            descripcion:descripcion.value, 
-            inicia: moment(_inicio).valueOf(), 
-            finaliza: moment(_fin).valueOf(),
-            duracion: _fin - _inicio,
-            uid: user.uid
-        }).then(()=>{
-            UIkit.notification({message: "<span uk-icon='icon: calendar'></span> Examen actualizado con éxito.", 
-            pos: 'top-center', 
-            status: 'primary',
-            timeout: 1000 
-            })
-        })}}
-        >Actualizar examen</button>
+      
+    <button class="uk-button uk-button-default uk-button-large uk-width-1-1 uk-margin-top" 
+        
+        on:click={async ()=> { AgregarArrayPregunta() }}
+        >Agregar nueva pregunta
+        {#await promiseUpdate}
+            <div uk-spinner></div>
+        {/await}
+    </button>
+       
+    </div>
 </fieldset>
     <div slot="fallback">
         Unable to display data...
